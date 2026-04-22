@@ -10,7 +10,7 @@ from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Query
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import init_db, get_db, Client, FinancialReport, AccountEntry
@@ -115,8 +115,10 @@ async def upload_file(
 
     report = _save_report(db, client_id, periodo, settore,
                           parsed, mesi, commento)
-    db.commit(); db.refresh(report)
-    _ = report.accounts  # eagerly load before session closes
+    db.commit()
+    report = (db.query(FinancialReport)
+              .options(selectinload(FinancialReport.accounts))
+              .filter(FinancialReport.id == report.id).first())
     return report
 
 
@@ -187,8 +189,13 @@ async def compare_upload(
 
     report_a = _save_report(db, client_id, periodo_a, settore, parsed_a, mesi_a, comm_a)
     report_b = _save_report(db, client_id, periodo_b, settore, parsed_b, mesi_b, comm_b)
-    db.commit(); db.refresh(report_a); db.refresh(report_b)
-    _ = report_a.accounts; _ = report_b.accounts  # eagerly load
+    db.commit()
+    report_a = (db.query(FinancialReport)
+               .options(selectinload(FinancialReport.accounts))
+               .filter(FinancialReport.id == report_a.id).first())
+    report_b = (db.query(FinancialReport)
+               .options(selectinload(FinancialReport.accounts))
+               .filter(FinancialReport.id == report_b.id).first())
 
     deltas = _compute_deltas(parsed_a, parsed_b)
 
@@ -212,7 +219,9 @@ def list_reports(client_id: Optional[str]=None, settore: Optional[str]=None,
 
 @app.get("/reports/{report_id}", response_model=ReportOut)
 def get_report(report_id: int, db: Session=Depends(get_db)):
-    r = db.get(FinancialReport, report_id)
+    r = (db.query(FinancialReport)
+         .options(selectinload(FinancialReport.accounts))
+         .filter(FinancialReport.id == report_id).first())
     if not r: raise HTTPException(404, "Report non trovato")
     return r
 
