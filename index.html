@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Analisi Professionisti — Corti Fumagalli Associati</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  /* Corti Fumagalli brand palette — navy blue + gold */
+  --cf-navy:      #0f1f3d;
+  --cf-navy-mid:  #1a3260;
+  --cf-navy-soft: #243d73;
+  --cf-gold:      #b8975a;
+  --cf-gold-light:#d4b278;
+  --cf-gold-pale: #f5ead8;
+
+  /* UI neutrals */
+  --paper:   #f7f5f1;
+  --cream:   #edeae3;
+  --rule:    #d8d4cb;
+  --muted:   #7a7670;
+  --ink:     #1a1814;
+  --card:    #ffffff;
+  --shadow:  0 2px 16px rgba(15,31,61,.08), 0 1px 4px rgba(15,31,61,.05);
+  --radius:  3px;
+
+  --mono:    'DM Mono', monospace;
+  --serif:   'Cormorant Garamond', serif;
+  --sans:    'Inter', sans-serif;
+
+  /* Semantic colours */
+  --positive: #1a5c3a;
+  --warn:     #8c2a0e;
+  --blue:     var(--cf-navy-mid);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--paper); color: var(--ink); min-height: 100vh; font-size: 14px; line-height: 1.6; }
+
+/* ── HEADER ── */
+header {
+  background: var(--cf-navy);
+  color: white;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid var(--cf-gold);
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.header-monogram {
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid var(--cf-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.header-monogram span {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--cf-gold);
+  letter-spacing: .02em;
+}
+.header-text {}
+.header-studio {
+  font-family: var(--serif);
+  font-size: .78rem;
+  color: var(--cf-gold-light);
+  letter-spacing: .06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.header-product {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-style: italic;
+  color: white;
+  line-height: 1.2;
+  letter-spacing: .01em;
+}
+.header-right {
+  font-family: var(--mono);
+  font-size: .65rem;
+  color: rgba(255,255,255,.35);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+/* ── SHELL ── */
+.shell { display: grid; grid-template-columns: 270px 1fr; min-height: calc(100vh - 64px); }
+
+/* ── SIDEBAR ── */
+aside {
+  background: var(--cf-navy);
+  padding: 1.75rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  border-right: 1px solid rgba(184,151,90,.2);
+}
+.sidebar-section-label {
+  font-family: var(--mono);
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--cf-gold);
+  margin-bottom: .6rem;
+  padding-bottom: .35rem;
+  border-bottom: 1px solid rgba(184,151,90,.25);
+}
+.upload-zone {
+  border: 1.5px dashed rgba(184,151,90,.4);
+  border-radius: var(--radius);
+  padding: 1.4rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  background: rgba(255,255,255,.04);
+}
+.upload-zone:hover, .upload-zone.drag {
+  border-color: var(--cf-gold);
+  background: rgba(184,151,90,.08);
+}
+.upload-icon { font-size: 1.8rem; margin-bottom: .5rem; opacity: .5; }
+.upload-zone p { font-size: .78rem; color: rgba(255,255,255,.45); line-height: 1.5; }
+.upload-zone strong { color: var(--cf-gold-light); font-weight: 500; }
+#file-input { display: none; }
+
+.client-item {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .55rem .8rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background .15s;
+  font-size: .84rem;
+  color: rgba(255,255,255,.65);
+}
+.client-item:hover { background: rgba(255,255,255,.07); color: white; }
+.client-item.active { background: var(--cf-gold); color: var(--cf-navy); }
+.client-badge {
+  font-family: var(--mono);
+  font-size: .68rem;
+  background: var(--cf-navy-soft);
+  color: var(--cf-gold-light);
+  padding: .1rem .4rem;
+  border-radius: 2px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.client-item.active .client-badge { background: rgba(15,31,61,.25); color: var(--cf-navy); }
+
+.sidebar-note {
+  font-size: .72rem;
+  color: rgba(255,255,255,.28);
+  line-height: 1.55;
+}
+.sidebar-note a { color: var(--cf-gold); text-decoration: none; }
+
+/* ── MAIN ── */
+main { padding: 2rem 2.5rem; overflow-y: auto; background: var(--paper); }
+
+/* ── LANDING ── */
+.landing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 65vh;
+  gap: 1.25rem;
+  text-align: center;
+}
+.landing-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: .65rem;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--cf-gold);
+  background: rgba(184,151,90,.1);
+  border: 1px solid rgba(184,151,90,.3);
+  padding: .3rem .8rem;
+  border-radius: 2px;
+}
+.landing h2 {
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--cf-navy);
+  line-height: 1.2;
+}
+.landing p { color: var(--muted); font-size: .9rem; max-width: 400px; font-weight: 300; }
+
+/* ── REPORT HEADER ── */
+.report-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+.report-header h2 {
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--cf-navy);
+}
+.periodo-badge {
+  font-family: var(--mono);
+  font-size: .68rem;
+  background: var(--cf-navy);
+  color: var(--cf-gold-light);
+  padding: .25rem .65rem;
+  border-radius: 2px;
+  letter-spacing: .1em;
+}
+.pdf-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--cf-navy);
+  color: var(--cf-gold-light);
+  border: 1px solid var(--cf-gold);
+  padding: .5rem 1.1rem;
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.pdf-btn:hover { background: var(--cf-gold); color: var(--cf-navy); }
+
+/* ── FORFETTARIO ALERT ── */
+.forfettario-alert {
+  background: #fdfaf0;
+  border: 1.5px solid var(--cf-gold);
+  border-left: 4px solid var(--cf-gold);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.75rem;
+  display: flex;
+  gap: .9rem;
+  align-items: flex-start;
+}
+.alert-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: .1rem; }
+.alert-title {
+  font-family: var(--mono);
+  font-size: .68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #7a5c00;
+  margin-bottom: .3rem;
+}
+.alert-body { font-size: .85rem; color: #4a3800; line-height: 1.65; }
+.alert-body strong { color: #7a5c00; font-weight: 600; }
+
+/* ── KPI GRID ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 2rem; }
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--kpi-accent, var(--cf-gold));
+}
+.kpi-label {
+  font-family: var(--mono);
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--muted);
+  margin-bottom: .5rem;
+}
+.kpi-value {
+  font-family: var(--serif);
+  font-size: 1.65rem;
+  color: var(--cf-navy);
+  line-height: 1.1;
+  font-weight: 500;
+}
+.kpi-value.positive { color: var(--positive); }
+.kpi-value.warning  { color: var(--warn); }
+.kpi-sub { font-size: .73rem; color: var(--muted); margin-top: .3rem; font-family: var(--mono); }
+
+/* ── PANELS ── */
+.content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+.panel {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.panel-header {
+  padding: .9rem 1.25rem;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  background: var(--cream);
+}
+.panel-title {
+  font-family: var(--mono);
+  font-size: .67rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--muted);
+  font-weight: 500;
+}
+.panel-body { padding: 1.25rem; }
+
+/* ── BAR CHART ── */
+.bar-chart { display: flex; flex-direction: column; gap: .55rem; }
+.bar-row { display: flex; align-items: center; gap: .75rem; }
+.bar-label { width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); font-size: .75rem; flex-shrink: 0; }
+.bar-track { flex: 1; background: var(--cream); border-radius: 2px; height: 13px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; background: var(--cf-navy-mid); transition: width .6s cubic-bezier(.4,0,.2,1); }
+.bar-amount { font-family: var(--mono); font-size: .71rem; color: var(--muted); width: 90px; text-align: right; flex-shrink: 0; }
+
+/* ── DONUT ── */
+.donut-wrap { display: flex; align-items: center; justify-content: center; gap: 2rem; padding: .5rem 0; }
+.donut-legend { display: flex; flex-direction: column; gap: .75rem; }
+.legend-item { display: flex; align-items: center; gap: .6rem; font-size: .82rem; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── AI SECTIONS ── */
+.ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+.ai-section {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.ai-section.full { grid-column: 1 / -1; }
+.ai-section-header {
+  padding: .8rem 1.25rem;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+}
+.ai-section-icon { font-size: .95rem; }
+.ai-section-title {
+  font-family: var(--mono);
+  font-size: .66rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-weight: 500;
+}
+.ai-section-body { padding: 1.1rem 1.25rem; font-size: .87rem; line-height: 1.72; color: #2a2d35; }
+
+.ai-section.analisi .ai-section-header { background: var(--cf-navy); }
+.ai-section.analisi .ai-section-title { color: var(--cf-gold-light); }
+.ai-section.analisi .ai-section-icon { filter: brightness(10); }
+
+.ai-section.attenzione .ai-section-header { background: #fff8f3; border-bottom-color: #f0d4c0; }
+.ai-section.attenzione .ai-section-title { color: #8c3a10; }
+
+.ai-section.fiscale .ai-section-header { background: #f3f6ff; border-bottom-color: #c8d4f0; }
+.ai-section.fiscale .ai-section-title { color: var(--cf-navy-mid); }
+
+.ai-section.raccomandazioni .ai-section-header { background: #f3faf6; border-bottom-color: #b8d9c8; }
+.ai-section.raccomandazioni .ai-section-title { color: #1a5c3a; }
+
+/* ── TAX ITEMS ── */
+.tax-suggestions { display: flex; flex-direction: column; gap: .55rem; margin-top: .8rem; }
+.tax-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .65rem;
+  padding: .65rem .9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--rule);
+  background: #f9f8f5;
+  font-size: .82rem;
+  line-height: 1.55;
+}
+.tax-item.forfettario { background: #fdfaf0; border-color: var(--cf-gold); }
+.tax-icon { flex-shrink: 0; margin-top: .1rem; }
+
+/* ── TABLE ── */
+.accounts-panel {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+thead th {
+  background: var(--cf-navy);
+  color: var(--cf-gold-light);
+  padding: .65rem 1rem;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: .63rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  font-weight: 500;
+  border-bottom: 2px solid var(--cf-gold);
+}
+thead th.num { text-align: right; }
+tbody tr { border-bottom: 1px solid #f0ede7; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #f8f6f2; }
+td { padding: .55rem 1rem; }
+td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
+.tipo-pill {
+  display: inline-block;
+  padding: .1rem .5rem;
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: .63rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.tipo-pill.ricavo { background: #e6f4ed; color: #1a5c3a; }
+.tipo-pill.costo  { background: #fdeee9; color: #8c2a0e; }
+.tipo-pill.altro  { background: #eee; color: var(--muted); }
+
+/* ── SPINNER / TOAST ── */
+.spinner-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 40vh; gap: 1rem; }
+.spinner { width: 28px; height: 28px; border: 2px solid var(--rule); border-top-color: var(--cf-navy); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  background: var(--cf-navy); color: white;
+  padding: .75rem 1.25rem; border-radius: var(--radius);
+  font-size: .82rem; font-family: var(--mono); z-index: 999;
+  animation: slideUp .3s ease;
+  border-left: 3px solid var(--cf-gold);
+  max-width: 320px;
+}
+.toast.error   { border-left-color: #c8400a; }
+.toast.success { border-left-color: #1a6e4a; }
+@keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { opacity: 1; } }
+.empty-state { padding: 2rem 1rem; text-align: center; color: rgba(255,255,255,.3); font-size: .8rem; }
+
+/* ── PRINT ── */
+.print-header { display: none; }
+@media print {
+  *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  header, aside, .pdf-btn, #toast-container { display: none !important; }
+  .shell { display: block; }
+  main { padding: .5rem 1.5rem; }
+  .print-header { display: block !important; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--cf-navy); }
+  .print-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-style: italic; color: var(--cf-navy); }
+  .print-sub { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--cf-gold); letter-spacing: .1em; text-transform: uppercase; margin-top: .2rem; }
+  .print-meta { font-family: 'DM Mono', monospace; font-size: .68rem; color: #666; margin-top: .25rem; }
+  .kpi-grid { grid-template-columns: repeat(4,1fr); gap: .5rem; margin-bottom: 1rem; }
+  .kpi-card { break-inside: avoid; box-shadow: none; }
+  .kpi-card::before { -webkit-print-color-adjust: exact; }
+  .forfettario-alert { break-inside: avoid; }
+  .content-grid, .ai-grid { grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1rem; }
+  .ai-section, .panel { break-inside: avoid; box-shadow: none; }
+  .ai-section-header { -webkit-print-color-adjust: exact; }
+  thead th { -webkit-print-color-adjust: exact; }
+  .accounts-panel { break-inside: avoid; }
+  table { font-size: .72rem; }
+  .bar-fill { -webkit-print-color-adjust: exact; }
+}
+
+/* ══ BENCHMARK PANEL ══ */
+.benchmark-section { margin-bottom: 2rem; }
+.benchmark-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; margin-top: .75rem; }
+.bench-card { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 1rem 1.1rem; box-shadow: var(--shadow-sm); }
+.bench-card-label { font-family: var(--mono); font-size: .58rem; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin-bottom: .4rem; }
+.bench-card-value { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; color: var(--navy); }
+.bench-card-sub { font-family: var(--mono); font-size: .65rem; color: var(--muted); margin-top: .2rem; }
+.bench-arrow { font-size: .75rem; padding: .1rem .35rem; border-radius: 2px; margin-left: .4rem; font-family: var(--mono); }
+.bench-arrow.above { background: #e2f0e8; color: var(--positive); }
+.bench-arrow.below { background: #fde8e0; color: var(--warn); }
+.bench-arrow.inline { background: #f0f0e8; color: var(--muted); }
+.bench-bar-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .5rem; }
+.bench-bar-label { font-size: .75rem; width: 140px; flex-shrink: 0; color: var(--ink); }
+.bench-bar-wrap { flex: 1; position: relative; height: 20px; background: var(--cream); border-radius: 2px; overflow: hidden; }
+.bench-bar-client { position: absolute; top: 0; height: 100%; background: var(--navy); opacity: .8; border-radius: 2px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+.bench-bar-bench  { position: absolute; top: 0; height: 100%; background: var(--gold); opacity: .5; border-radius: 2px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+.bench-bar-tick   { position: absolute; top: 0; height: 100%; width: 2px; background: var(--gold); opacity: .9; }
+.bench-bar-amounts { font-family: var(--mono); font-size: .68rem; color: var(--muted); width: 80px; text-align: right; flex-shrink: 0; }
+.peer-badge { display: inline-flex; align-items: center; gap: .4rem; background: var(--navy); color: var(--gold-light); font-family: var(--mono); font-size: .62rem; padding: .2rem .65rem; border-radius: 2px; margin-left: .75rem; vertical-align: middle; }
+
+</style>
+</head>
+
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-brand">
+    <div class="header-monogram"><span>CF</span></div>
+    <div class="header-text">
+      <div class="header-studio">Corti Fumagalli Associati</div>
+      <div class="header-product">Analisi Professionisti</div>
+    </div>
+  </div>
+  <div class="header-right">Studio Professionale<br>dal 2014 · Milano · Lissone</div>
+</header>
+
+<!-- ── SHELL ── -->
+<div class="shell">
+
+  <!-- ── SIDEBAR ── -->
+  <aside>
+    <div>
+      <div class="sidebar-section-label">Carica file</div>
+      <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <div class="upload-icon">📂</div>
+        <p><strong>Clicca o trascina</strong><br>file Excel del gestionale (.xlsx)</p>
+      </div>
+      <input type="file" id="file-input" accept=".xlsx,.xls,.xlsm"/>
+    </div>
+
+    <div>
+      <div class="sidebar-section-label">Settore cliente</div>
+      <select id="settore-select" style="width:100%;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);border:1px solid rgba(184,148,63,.3);border-radius:3px;padding:.55rem .75rem;font-family:var(--mono);font-size:.75rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;">
+        <option value="">Caricamento…</option>
+      </select>
+    </div>
+
+    <div>
+      <div class="sidebar-section-label">Clienti caricati</div>
+      <div id="client-list">
+        <div class="empty-state">Nessun cliente caricato</div>
+      </div>
+    </div>
+
+    <div style="margin-top:auto;">
+      <div class="sidebar-section-label">Privacy</div>
+      <p class="sidebar-note">
+        Nessun nome o dato personale viene salvato. I clienti sono identificati esclusivamente dal codice numerico del gestionale.<br><br>
+        <a href="https://cortifumagalliassociati.it" target="_blank">cortifumagalliassociati.it</a>
+      </p>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main id="main-content">
+    <div class="landing">
+      <span class="landing-badge">Analisi Professionisti</span>
+      <h2>Prospetto Reddito<br>automatizzato</h2>
+      <p>Carica un file Excel esportato dal gestionale per ottenere KPI, analisi fiscale e commento professionale AI.</p>
+    </div>
+  </main>
+
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+const API = 'http://127.0.0.1:8000';
+
+// Load settori from backend on startup
+async function loadSettori() {
+  try {
+    const res = await fetch(`${API}/settori`);
+    const list = await res.json();
+    const sel = document.getElementById('settore-select');
+    sel.innerHTML = list.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
+  } catch(e) {
+    const sel = document.getElementById('settore-select');
+    sel.innerHTML = `<option value="medico">Medico specialista</option>
+      <option value="dentista">Odontoiatra / Dentista</option>
+      <option value="avvocato">Avvocato</option>
+      <option value="ingegnere_architetto">Ingegnere / Architetto</option>
+      <option value="consulente_lavoro">Consulente del lavoro</option>
+      <option value="psicologo">Psicologo / Psicoterapeuta</option>
+      <option value="fisioterapista">Fisioterapista</option>
+      <option value="commercialista">Dottore commercialista</option>
+      <option value="altro">Altro professionista</option>`;
+  }
+}
+loadSettori();
+
+const FORFETTARIO_SOGLIA = 85000;
+const state = { reports: {}, active: null };
+
+const fmt    = n => new Intl.NumberFormat('it-IT', {style:'currency', currency:'EUR', maximumFractionDigits:2}).format(n);
+const fmtPct = n => n.toFixed(2).replace('.', ',') + '%';
+
+// ── Upload ──
+document.getElementById('file-input').addEventListener('change', e => {
+  const f = e.target.files[0]; if (f) handleFile(f); e.target.value = '';
+});
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('drag');
+  const f = e.dataTransfer.files[0]; if (f) handleFile(f);
+});
+
+async function handleFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['xlsx','xls','xlsm'].includes(ext)) { showToast('Formato non supportato. Usa .xlsx', 'error'); return; }
+  showLoading('Analisi in corso…');
+  showToast('Caricamento e analisi in corso…');
+  const settore = document.getElementById('settore-select').value || 'altro';
+  const fd = new FormData(); fd.append('file', file);
+  try {
+    const res = await fetch(`${API}/upload?settore=${encodeURIComponent(settore)}`, { method: 'POST', body: fd });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Errore server'); }
+    const report = await res.json();
+    state.reports[report.client_id] = report;
+    state.active = report.client_id;
+    updateClientList();
+    renderReport(report.client_id);
+    showToast(`Cliente ${report.client_id} — analisi completata ✓`, 'success');
+  } catch(e) {
+    showToast('Errore: ' + e.message, 'error');
+    document.getElementById('main-content').innerHTML =
+      `<div class="landing"><div style="font-size:3rem;">⚠️</div><h2>Errore</h2><p>${e.message}</p></div>`;
+  }
+}
+
+function showLoading(msg) {
+  document.getElementById('main-content').innerHTML =
+    `<div class="spinner-wrap"><div class="spinner"></div>
+     <span style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">${msg}</span></div>`;
+}
+
+// ── Client list ──
+function updateClientList() {
+  const list = document.getElementById('client-list');
+  const ids = Object.keys(state.reports);
+  if (!ids.length) { list.innerHTML = '<div class="empty-state">Nessun cliente caricato</div>'; return; }
+  list.innerHTML = ids.map(id => `
+    <div class="client-item ${state.active===id?'active':''}" onclick="selectClient('${id}')">
+      <span class="client-badge">${id}</span>
+      <span>Cliente ${id}</span>
+      <span style="margin-left:auto;font-family:var(--mono);font-size:.63rem;opacity:.6">
+        ${state.reports[id].periodo}
+      </span>
+    </div>`).join('');
+}
+function selectClient(id) { state.active = id; updateClientList(); renderReport(id); }
+
+// ── Parse AI ──
+function parseAI(raw) {
+  if (!raw) return null;
+  try { return JSON.parse(raw.replace(/```json|```/g, '').trim()); }
+  catch(e) { return null; }
+}
+
+// ── PDF ──
+function exportPDF(clientId) {
+  const r = state.reports[clientId]; if (!r) return;
+  document.getElementById('print-title').textContent = `Analisi Professionisti — Cliente ${r.client_id}`;
+  document.getElementById('print-meta').textContent  = `Periodo ${r.periodo} · Generato il ${new Date().toLocaleDateString('it-IT')}`;
+  window.print();
+}
+
+// ── Render ──
+function renderReport(clientId) {
+  const r = state.reports[clientId]; if (!r) return;
+  const ai = parseAI(r.commento_ai);
+  const costs = (r.accounts||[])
+    .filter(a => a.tipo === 'costo')
+    .sort((a,b) => (b.pagamenti+Math.abs(b.rettifiche)) - (a.pagamenti+Math.abs(a.rettifiche)));
+  const maxCost = costs.length ? costs[0].pagamenti + Math.abs(costs[0].rettifiche) : 1;
+  const top5 = costs.slice(0,5);
+  const marginColor  = r.margine_percentuale >= 50 ? 'positive' : r.margine_percentuale >= 25 ? '' : 'warning';
+  const costRatio    = (r.costi / r.ricavi * 100).toFixed(1);
+  const kpiAccentM   = r.margine_percentuale >= 50 ? '#1a5c3a' : r.margine_percentuale >= 25 ? '#b8975a' : '#8c2a0e';
+
+  const forfettarioHTML = r.ricavi < FORFETTARIO_SOGLIA ? `
+    <div class="forfettario-alert">
+      <span class="alert-icon">💡</span>
+      <div>
+        <div class="alert-title">Valutare il Regime Forfettario</div>
+        <div class="alert-body">
+          I ricavi del periodo (<strong>${fmt(r.ricavi)}</strong>) sono al di sotto della soglia di
+          <strong>€85.000</strong> prevista per l'accesso al regime forfettario.
+          Questo regime prevede un'<strong>imposta sostitutiva al 15%</strong>
+          (ridotta al <strong>5% per i primi 5 anni</strong>), l'esonero dagli obblighi IVA e una significativa
+          semplificazione degli adempimenti contabili. Si consiglia di verificare l'assenza di cause ostative:
+          redditi da lavoro dipendente superiori a €30.000, partecipazioni in società di persone o srl trasparenti,
+          utilizzo prevalente di beni/servizi del datore di lavoro.
+        </div>
+      </div>
+    </div>` : '';
+
+  let aiHTML = '';
+  if (ai) {
+    aiHTML = `
+    <div class="ai-grid">
+      <div class="ai-section analisi full">
+        <div class="ai-section-header"><span class="ai-section-icon">📊</span><span class="ai-section-title">Analisi generale</span></div>
+        <div class="ai-section-body">${ai.analisi_generale||''}</div>
+      </div>
+      <div class="ai-section attenzione">
+        <div class="ai-section-header"><span class="ai-section-icon">⚠️</span><span class="ai-section-title">Punti di attenzione</span></div>
+        <div class="ai-section-body">${ai.punti_attenzione||''}</div>
+      </div>
+      <div class="ai-section fiscale">
+        <div class="ai-section-header"><span class="ai-section-icon">💡</span><span class="ai-section-title">Ottimizzazione fiscale</span></div>
+        <div class="ai-section-body">
+          ${ai.ottimizzazione_fiscale||''}
+          ${buildTaxItems(r.accounts||[], r.ricavi)}
+        </div>
+      </div>
+      <div class="ai-section raccomandazioni full">
+        <div class="ai-section-header"><span class="ai-section-icon">✅</span><span class="ai-section-title">Raccomandazioni</span></div>
+        <div class="ai-section-body">${ai.raccomandazioni||''}</div>
+      </div>
+    </div>`;
+  } else {
+    aiHTML = `<div class="ai-section analisi" style="margin-bottom:1.5rem">
+      <div class="ai-section-header"><span class="ai-section-icon">📊</span><span class="ai-section-title">Commento</span></div>
+      <div class="ai-section-body">${r.commento_ai||'—'}</div>
+    </div>`;
+  }
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="print-header">
+      <div class="print-logo">Corti Fumagalli Associati — Analisi Professionisti</div>
+      <div class="print-sub">Studio Professionale · Milano · Lissone</div>
+      <div class="print-meta" id="print-meta"></div>
+      <div id="print-title" style="display:none"></div>
+    </div>
+
+    <div class="report-header">
+      <h2>Cliente ${r.client_id}</h2>
+      <span class="periodo-badge">${r.periodo}</span>
+      <button class="pdf-btn" onclick="exportPDF('${r.client_id}')">⬇ Esporta PDF</button>
+    </div>
+
+    ${forfettarioHTML}
+
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--kpi-accent:var(--cf-navy-mid)">
+        <div class="kpi-label">Ricavi totali</div>
+        <div class="kpi-value">${fmt(r.ricavi)}</div>
+        <div class="kpi-sub">incassi del periodo</div>
+      </div>
+      <div class="kpi-card" style="--kpi-accent:#8c2a0e">
+        <div class="kpi-label">Costi totali</div>
+        <div class="kpi-value">${fmt(r.costi)}</div>
+        <div class="kpi-sub">${costRatio}% sui ricavi</div>
+      </div>
+      <div class="kpi-card" style="--kpi-accent:var(--positive)">
+        <div class="kpi-label">Margine operativo</div>
+        <div class="kpi-value ${marginColor}">${fmt(r.margine)}</div>
+        <div class="kpi-sub">ricavi − costi</div>
+      </div>
+      <div class="kpi-card" style="--kpi-accent:${kpiAccentM}">
+        <div class="kpi-label">Margine %</div>
+        <div class="kpi-value ${marginColor}">${fmtPct(r.margine_percentuale)}</div>
+        <div class="kpi-sub">margine / ricavi</div>
+      </div>
+    </div>
+
+    ${aiHTML}
+
+    <div class="content-grid">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Top 5 voci di costo</span></div>
+        <div class="panel-body">
+          <div class="bar-chart">
+            ${top5.map(c => {
+              const v = c.pagamenti + Math.abs(c.rettifiche);
+              const pct = (v / maxCost * 100).toFixed(1);
+              const label = c.descrizione.replace(/^\d+ - /, '').substring(0, 42);
+              return `<div class="bar-row">
+                <span class="bar-label" title="${c.descrizione}">${label}</span>
+                <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+                <span class="bar-amount">${fmt(v)}</span>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Composizione del risultato</span></div>
+        <div class="panel-body">
+          <div class="donut-wrap">
+            ${donutSVG(r.ricavi, r.costi, r.margine)}
+            <div class="donut-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background:var(--cf-navy-mid)"></span>
+                <div><div style="font-weight:500">Ricavi</div>
+                <div style="font-family:var(--mono);font-size:.71rem;color:var(--muted)">${fmt(r.ricavi)}</div></div>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#8c2a0e"></span>
+                <div><div style="font-weight:500">Costi</div>
+                <div style="font-family:var(--mono);font-size:.71rem;color:var(--muted)">${fmt(r.costi)}</div></div>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:var(--cf-gold)"></span>
+                <div><div style="font-weight:500">Margine</div>
+                <div style="font-family:var(--mono);font-size:.71rem;color:var(--muted)">${fmt(r.margine)}</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benchmark panel -->
+    <div class="benchmark-section" id="bench-section" style="display:none">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Benchmark di settore</span>
+          <span id="peer-badge-container"></span>
+        </div>
+        <div class="panel-body" id="bench-body"></div>
+      </div>
+    </div>
+
+        <div class="accounts-panel">
+      <div class="panel-header"><span class="panel-title">Dettaglio conti — ${(r.accounts||[]).length} voci</span></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Cod.</th><th>Descrizione</th><th>Tipo</th>
+            <th class="num">Incassi</th><th class="num">Pagamenti</th><th class="num">Rettifiche</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${(r.accounts||[]).map(a => `
+            <tr>
+              <td style="font-family:var(--mono);font-size:.71rem;color:var(--muted)">${a.codice||'—'}</td>
+              <td>${a.descrizione.replace(/^\d+ - /, '')}</td>
+              <td><span class="tipo-pill ${a.tipo}">${a.tipo}</span></td>
+              <td class="num">${a.incassi  ? fmt(a.incassi)           : '—'}</td>
+              <td class="num">${a.pagamenti? fmt(a.pagamenti)         : '—'}</td>
+              <td class="num">${a.rettifiche ? fmt(Math.abs(a.rettifiche)) : '—'}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+// ── Tax pills ──
+// Fetch benchmarks.json and render benchmark panel after report is shown
+async function loadAndRenderBenchmark(r) {
+  try {
+    const res = await fetch(`${API}/settori`);
+    // We need the full benchmark data — fetch from a dedicated endpoint
+    const benchRes = await fetch(`${API}/benchmarks/raw`);
+    if (benchRes.ok) {
+      const benchmarks = await benchRes.json();
+      renderBenchmark(r, benchmarks);
+    }
+  } catch(e) {
+    // Fallback: use hardcoded defaults silently
+  }
+}
+
+function buildTaxItems(accounts, ricavi) {
+  const items = [];
+  const has = kw => accounts.some(a => kw.test(a.descrizione.toLowerCase()));
+  if (ricavi < FORFETTARIO_SOGLIA)
+    items.push({icon:'💡', cls:'forfettario', text:`<strong>Regime Forfettario</strong>: ricavi sotto €85.000. Imposta sostitutiva 15% (o 5% per i primi 5 anni), esonero IVA, contabilità semplificata.`});
+  if (!has(/formaz|aggiorn|corso|master/))
+    items.push({icon:'📚', cls:'', text:`<strong>Formazione professionale</strong>: nessuna spesa rilevata. Corsi e aggiornamenti sono integralmente deducibili.`});
+  if (!has(/previd|pensione|fondo pens/))
+    items.push({icon:'🏦', cls:'', text:`<strong>Previdenza integrativa</strong>: considerare versamenti a fondi pensione (deducibili fino a €5.164,57/anno).`});
+  const tel = accounts.find(a => /telefon|mobile/.test(a.descrizione.toLowerCase()));
+  if (tel && tel.pagamenti > 500)
+    items.push({icon:'📱', cls:'', text:`<strong>Telefonia</strong>: ${fmt(tel.pagamenti)} deducibile all'80%. Verificare che tutta la documentazione sia in ordine.`});
+  const auto = accounts.find(a => /carburant|veicol|auto/.test(a.descrizione.toLowerCase()));
+  if (auto)
+    items.push({icon:'🚗', cls:'', text:`<strong>Spese auto</strong>: ${fmt(auto.pagamenti)} con deducibilità al 20%. Valutare l'uso del rimborso chilometrico.`});
+  if (!has(/software|licenz|digitale|cloud/))
+    items.push({icon:'💻', cls:'', text:`<strong>Software e tecnologia</strong>: investimenti in software professionale sono deducibili al 100%.`});
+  const labor = accounts.find(a => /lavoro autonomo|prestaz.+terzi/.test(a.descrizione.toLowerCase()));
+  if (labor && labor.pagamenti > 100000)
+    items.push({icon:'👥', cls:'', text:`<strong>Lavoro autonomo</strong>: voce rilevante (${fmt(labor.pagamenti)}). Verificare regolarità delle fatture e partite IVA dei collaboratori.`});
+  if (!items.length) return '';
+  return `<div class="tax-suggestions">${items.map(i =>
+    `<div class="tax-item ${i.cls}"><span class="tax-icon">${i.icon}</span><span>${i.text}</span></div>`
+  ).join('')}</div>`;
+}
+
+// ── Donut ──
+function renderBenchmark(r, benchmarks) {
+  const sec = document.getElementById('bench-section');
+  const body = document.getElementById('bench-body');
+  const peerCont = document.getElementById('peer-badge-container');
+  if (!sec || !body) return;
+
+  const bench = benchmarks[r.settore] || benchmarks['altro'];
+  if (!bench) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+
+  const mp = r.margine_percentuale;
+  const bm = bench.margine_pct_medio;
+  const bmin = bench.margine_pct_min;
+  const bmax = bench.margine_pct_max;
+  const diff = mp - bm;
+  const arrowCls = diff > 3 ? 'above' : diff < -3 ? 'below' : 'inline';
+  const arrowTxt = diff > 3 ? `▲ +${diff.toFixed(1)}pp` : diff < -3 ? `▼ ${diff.toFixed(1)}pp` : `≈ ${diff>0?'+':''}${diff.toFixed(1)}pp`;
+
+  // Peer badge
+  const ai = r.commento_ai ? (() => { try { return JSON.parse(r.commento_ai); } catch(e) { return null; } })() : null;
+  peerCont.innerHTML = '';
+
+  // KPI cards
+  const ricaviRef = bench.ricavi_medi || 1;
+  const maxBar = Math.max(r.ricavi, ricaviRef) * 1.1;
+
+  body.innerHTML = `
+    <div class="benchmark-grid" style="margin-bottom:1.25rem">
+      <div class="bench-card">
+        <div class="bench-card-label">Margine % cliente</div>
+        <div class="bench-card-value">${mp.toFixed(1)}%<span class="bench-arrow ${arrowCls}">${arrowTxt}</span></div>
+        <div class="bench-card-sub">Media settore: ${bm}% (range ${bmin}%–${bmax}%)</div>
+      </div>
+      <div class="bench-card">
+        <div class="bench-card-label">Ricavi cliente</div>
+        <div class="bench-card-value">${fmt(r.ricavi)}</div>
+        <div class="bench-card-sub">Media settore: ${fmt(ricaviRef)}</div>
+      </div>
+      <div class="bench-card">
+        <div class="bench-card-label">Settore di riferimento</div>
+        <div class="bench-card-value" style="font-size:.95rem">${bench.label}</div>
+        <div class="bench-card-sub" style="line-height:1.5">${bench.note_settore || ''}</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:.5rem">
+      <div style="font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.75rem">
+        Confronto visivo — Cliente (blu) vs. Benchmark settore (oro)
+      </div>
+      ${buildBenchBars(r, bench)}
+    </div>
+  `;
+}
+
+function buildBenchBars(r, bench) {
+  const items = [
+    { label: 'Margine %', client: r.margine_percentuale, ref: bench.margine_pct_medio, max: Math.max(r.margine_percentuale, bench.margine_pct_max || 80) * 1.1, suffix: '%', isPercent: true },
+    { label: 'Costo lavoro / ricavi', client: r.ricavi > 0 ? _getCostoLavoro(r) / r.ricavi * 100 : 0, ref: bench.costo_lavoro_su_ricavi, max: Math.max(_getCostoLavoro(r)/r.ricavi*100, bench.costo_lavoro_su_ricavi || 25) * 1.3 + 5, suffix: '%', isPercent: true },
+    { label: 'Costo autonomi / ricavi', client: r.ricavi > 0 ? _getCostoAutonomi(r) / r.ricavi * 100 : 0, ref: bench.costo_autonomo_su_ricavi, max: Math.max(_getCostoAutonomi(r)/r.ricavi*100, bench.costo_autonomo_su_ricavi || 25) * 1.3 + 5, suffix: '%', isPercent: true },
+  ];
+  return items.map(it => {
+    const cPct = Math.min((it.client / it.max) * 100, 100).toFixed(1);
+    const rPct = Math.min((it.ref / it.max) * 100, 100).toFixed(1);
+    return `<div class="bench-bar-row">
+      <span class="bench-bar-label">${it.label}</span>
+      <div class="bench-bar-wrap">
+        <div class="bench-bar-client" style="width:${cPct}%"></div>
+        <div class="bench-bar-tick" style="left:${rPct}%"></div>
+      </div>
+      <span class="bench-bar-amounts">${it.client.toFixed(1)}${it.suffix} <span style="color:var(--gold)">| ${it.ref}${it.suffix}</span></span>
+    </div>`;
+  }).join('');
+}
+
+function _getCostoLavoro(r) {
+  return (r.accounts||[]).filter(a => /retribuz|personale|dipendente|inps/i.test(a.descrizione))
+    .reduce((s,a) => s + a.pagamenti, 0);
+}
+function _getCostoAutonomi(r) {
+  return (r.accounts||[]).filter(a => /lavoro autonomo|prestaz.+terzi/i.test(a.descrizione))
+    .reduce((s,a) => s + a.pagamenti, 0);
+}
+
+function donutSVG(ricavi, costi, margine) {
+  const total = ricavi, cp = (costi/total)*100, mp = (margine/total)*100;
+  const cx=70, cy=70, r=52, s=22, c=2*Math.PI*r;
+  const arc = (pct, off, col) =>
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${s}"
+     stroke-dasharray="${(pct/100)*c} ${c-(pct/100)*c}"
+     stroke-dashoffset="${-off*c/100+c/4}" transform="rotate(-90 ${cx} ${cy})"/>`;
+  return `<svg width="140" height="140" viewBox="0 0 140 140">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#edeae3" stroke-width="${s}"/>
+    ${arc(cp, 0, '#8c2a0e')}${arc(mp, cp, '#b8975a')}
+    <text x="${cx}" y="${cy-6}" text-anchor="middle" font-family="Cormorant Garamond,serif"
+      font-size="17" fill="#0f1f3d" font-style="italic" font-weight="500">${mp.toFixed(0)}%</text>
+    <text x="${cx}" y="${cy+12}" text-anchor="middle" font-family="DM Mono,monospace"
+      font-size="7" fill="#7a7670" letter-spacing="0.1em">MARGINE</text>
+  </svg>`;
+}
+
+// ── Toast ──
+function showToast(msg, type='') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`; el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3800);
+}
+</script>
+</body>
+</html>
