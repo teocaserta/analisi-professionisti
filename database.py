@@ -26,6 +26,8 @@ class FinancialReport(Base):
     periodo             = Column(String, index=True)
     settore             = Column(String, nullable=True)
     file_type           = Column(String, nullable=True, default="prospetto_reddito")
+    mesi_periodo        = Column(Integer, nullable=True, default=12)
+    ricavi_annualizzati = Column(Float, nullable=True)
     ricavi              = Column(Float)
     costi               = Column(Float)
     margine             = Column(Float)
@@ -75,6 +77,12 @@ def _migrate():
 
         if "file_type" not in report_cols:
             conn.execute(text("ALTER TABLE financial_reports ADD COLUMN file_type VARCHAR"))
+            conn.commit()
+        if "mesi_periodo" not in report_cols:
+            conn.execute(text("ALTER TABLE financial_reports ADD COLUMN mesi_periodo INTEGER DEFAULT 12"))
+            conn.commit()
+        if "ricavi_annualizzati" not in report_cols:
+            conn.execute(text("ALTER TABLE financial_reports ADD COLUMN ricavi_annualizzati REAL"))
             conn.commit()
 
 def get_db():

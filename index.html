@@ -538,15 +538,7 @@ td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
 
   <!-- ── SIDEBAR ── -->
   <aside>
-    <div>
-      <div class="sidebar-section-label">Carica file</div>
-      <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-        <div class="upload-icon">📂</div>
-        <p><strong>Clicca o trascina</strong><br>file Excel del gestionale (.xlsx)</p>
-      </div>
-      <input type="file" id="file-input" accept=".xlsx,.xls,.xlsm"/>
-    </div>
-
+    <!-- SETTORE -->
     <div>
       <div class="sidebar-section-label">Settore cliente</div>
       <select id="settore-select" style="width:100%;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);border:1px solid rgba(184,148,63,.3);border-radius:3px;padding:.55rem .75rem;font-family:var(--mono);font-size:.75rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;">
@@ -554,12 +546,19 @@ td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
       </select>
     </div>
 
+    <!-- PERIODO A -->
     <div>
-      <div class="sidebar-section-label">Periodo di riferimento</div>
-      <div style="display:flex;gap:.5rem;margin-bottom:.5rem">
-        <input id="periodo-anno" type="number" value="2025" min="2020" max="2035"
-          style="width:80px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);border:1px solid rgba(184,148,63,.3);border-radius:3px;padding:.5rem .6rem;font-family:var(--mono);font-size:.75rem;outline:none;" />
-        <select id="periodo-tipo" style="flex:1;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);border:1px solid rgba(184,148,63,.3);border-radius:3px;padding:.5rem .6rem;font-family:var(--mono);font-size:.75rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;">
+      <div class="sidebar-section-label" style="color:var(--gold-light)">Periodo A</div>
+      <div id="drop-zone-a" onclick="document.getElementById('file-a').click()"
+        style="border:2px dashed rgba(184,148,63,.4);border-radius:3px;padding:1rem;text-align:center;cursor:pointer;background:rgba(255,255,255,.04);transition:all .2s;margin-bottom:.6rem">
+        <div style="font-size:1.4rem;opacity:.5;margin-bottom:.3rem">📂</div>
+        <div id="file-a-name" style="font-size:.72rem;color:rgba(255,255,255,.45)"><strong style="color:var(--gold-light)">Clicca</strong> o trascina</div>
+      </div>
+      <input type="file" id="file-a" accept=".xlsx,.xls,.xlsm" style="display:none" onchange="onFileSelected('a',this)"/>
+      <div style="display:flex;gap:.4rem">
+        <input id="anno-a" type="number" value="2025" min="2020" max="2035"
+          style="width:72px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);border:1px solid rgba(184,148,63,.3);border-radius:3px;padding:.45rem .5rem;font-family:var(--mono);font-size:.72rem;outline:none;"/>
+        <select id="tipo-a" style="flex:1;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);border:1px solid rgba(184,148,63,.3);border-radius:3px;padding:.45rem .5rem;font-family:var(--mono);font-size:.72rem;outline:none;cursor:pointer;appearance:none;">
           <option value="">Annuale</option>
           <option value="-Q1">I Trimestre</option>
           <option value="-Q2">II Trimestre</option>
@@ -567,24 +566,44 @@ td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
           <option value="-Q4">IV Trimestre</option>
         </select>
       </div>
-      <div style="font-size:.68rem;color:rgba(255,255,255,.3);font-family:var(--mono)">
-        Periodo caricato: <span id="periodo-preview" style="color:var(--gold-light)">2025</span>
+    </div>
+
+    <!-- PERIODO B -->
+    <div>
+      <div class="sidebar-section-label" style="color:rgba(212,172,85,.6)">Periodo B <span style="font-size:.55rem;opacity:.6">(opzionale — confronto)</span></div>
+      <div id="drop-zone-b" onclick="document.getElementById('file-b').click()"
+        style="border:2px dashed rgba(184,148,63,.2);border-radius:3px;padding:1rem;text-align:center;cursor:pointer;background:rgba(255,255,255,.02);transition:all .2s;margin-bottom:.6rem">
+        <div style="font-size:1.4rem;opacity:.3;margin-bottom:.3rem">📂</div>
+        <div id="file-b-name" style="font-size:.72rem;color:rgba(255,255,255,.3)">Per confronto<br><strong style="color:rgba(212,172,85,.5)">Clicca</strong> o trascina</div>
+      </div>
+      <input type="file" id="file-b" accept=".xlsx,.xls,.xlsm" style="display:none" onchange="onFileSelected('b',this)"/>
+      <div style="display:flex;gap:.4rem">
+        <input id="anno-b" type="number" value="2025" min="2020" max="2035"
+          style="width:72px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);border:1px solid rgba(184,148,63,.2);border-radius:3px;padding:.45rem .5rem;font-family:var(--mono);font-size:.72rem;outline:none;"/>
+        <select id="tipo-b" style="flex:1;background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);border:1px solid rgba(184,148,63,.2);border-radius:3px;padding:.45rem .5rem;font-family:var(--mono);font-size:.72rem;outline:none;cursor:pointer;appearance:none;">
+          <option value="">Annuale</option>
+          <option value="-Q1">I Trimestre</option>
+          <option value="-Q2">II Trimestre</option>
+          <option value="-Q3">III Trimestre</option>
+          <option value="-Q4">IV Trimestre</option>
+        </select>
       </div>
     </div>
 
+    <!-- ANALIZZA -->
+    <button id="btn-analizza" onclick="handleAnalizza()"
+      style="width:100%;background:var(--gold);color:var(--navy-deep);border:none;border-radius:3px;padding:.65rem;font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:opacity .2s">
+      ▶ Analizza
+    </button>
+
     <div>
-      <div class="sidebar-section-label">Clienti caricati</div>
-      <div id="client-list">
-        <div class="empty-state">Nessun cliente caricato</div>
-      </div>
+      <div class="sidebar-section-label">Storico clienti</div>
+      <div id="client-list"><div class="empty-state">Nessun cliente</div></div>
     </div>
 
     <div style="margin-top:auto;">
-      <div class="sidebar-section-label">Privacy</div>
-      <p class="sidebar-note">
-        Nessun nome o dato personale viene salvato. I clienti sono identificati esclusivamente dal codice numerico del gestionale.<br><br>
-        <a href="https://cortifumagalliassociati.it" target="_blank">cortifumagalliassociati.it</a>
-      </p>
+      <div class="sidebar-section-label">Note privacy</div>
+      <p class="sidebar-note">Nessun nome o dato personale viene salvato. I clienti sono identificati esclusivamente tramite codice numerico.</p>
     </div>
   </aside>
 
@@ -603,608 +622,520 @@ td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
 
 <script>
 const API = '';
+const state = { files: {a:null, b:null}, reports: {}, active: null, trendData: {}, compareResult: null };
 
-// Load settori from backend on startup
-async function loadSettori() {
+const fmt    = n => new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n);
+const fmtPct = n => n.toFixed(2).replace('.',',')+"%";
+const getPeriodo = slot => (document.getElementById(`anno-${slot}`)?.value||'2025') + (document.getElementById(`tipo-${slot}`)?.value||'');
+
+// ── File selection ──
+function onFileSelected(slot, input) {
+  const file = input.files[0];
+  if (!file) return;
+  state.files[slot] = file;
+  const label = document.getElementById(`file-${slot}-name`);
+  if (label) { label.innerHTML = `<strong style="color:var(--gold-light)">${file.name.substring(0,28)}</strong>`; }
+  const dz = document.getElementById(`drop-zone-${slot}`);
+  if (dz) dz.style.borderColor = 'var(--gold-light)';
+}
+
+// Drag & drop
+['a','b'].forEach(slot => {
+  const dz = document.getElementById(`drop-zone-${slot}`);
+  if (!dz) return;
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.background='rgba(184,148,63,.1)'; });
+  dz.addEventListener('dragleave', () => { dz.style.background = slot==='a' ? 'rgba(255,255,255,.04)' : 'rgba(255,255,255,.02)'; });
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); dz.style.background = slot==='a' ? 'rgba(255,255,255,.04)' : 'rgba(255,255,255,.02)';
+    const f = e.dataTransfer.files[0];
+    if (f) { state.files[slot]=f; const lbl=document.getElementById(`file-${slot}-name`); if(lbl) lbl.innerHTML=`<strong style="color:var(--gold-light)">${f.name.substring(0,28)}</strong>`; dz.style.borderColor='var(--gold-light)'; }
+  });
+});
+
+// ── Main analysis handler ──
+async function handleAnalizza() {
+  if (!state.files.a) { showToast('Carica almeno il file A','error'); return; }
+  const settore  = document.getElementById('settore-select').value || 'altro';
+  const periodoA = getPeriodo('a');
+  const hasB     = !!state.files.b;
+  const periodoB = hasB ? getPeriodo('b') : null;
+
+  document.getElementById('btn-analizza').textContent = '⏳ Analisi in corso…';
+  document.getElementById('btn-analizza').disabled = true;
+
+  showLoading(hasB ? `Analisi e confronto ${periodoA} vs ${periodoB}…` : `Analisi ${periodoA}…`);
+
   try {
-    const res = await fetch(`${API}/settori`);
-    if (!res.ok) throw new Error('server error');
-    const text = await res.text();
-    const list = JSON.parse(text);
-    const sel = document.getElementById('settore-select');
-    sel.innerHTML = list.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
+    if (hasB) {
+      await handleCompare(settore, periodoA, periodoB);
+    } else {
+      await handleSingle(settore, periodoA);
+    }
   } catch(e) {
-    const sel = document.getElementById('settore-select');
-    sel.innerHTML = `<option value="medico">Medico specialista</option>
-      <option value="dentista">Odontoiatra / Dentista</option>
-      <option value="avvocato">Avvocato</option>
-      <option value="ingegnere_architetto">Ingegnere / Architetto</option>
-      <option value="consulente_lavoro">Consulente del lavoro</option>
-      <option value="psicologo">Psicologo / Psicoterapeuta</option>
-      <option value="fisioterapista">Fisioterapista</option>
-      <option value="commercialista">Dottore commercialista</option>
-      <option value="altro">Altro professionista</option>`;
+    showToast('Errore: '+e.message,'error');
+    document.getElementById('main-content').innerHTML=`<div class="landing"><div class="landing-icon">⚠️</div><h2>Errore</h2><p>${e.message}</p></div>`;
+  } finally {
+    document.getElementById('btn-analizza').textContent = '▶ Analizza';
+    document.getElementById('btn-analizza').disabled = false;
   }
 }
-loadSettori();
 
-// Update periodo preview
-function updatePeriodoPreview() {
-  const anno = document.getElementById('periodo-anno')?.value || '2025';
-  const tipo = document.getElementById('periodo-tipo')?.value || '';
-  const labels = {'':' (Annuale)','-Q1':' Q1','-Q2':' Q2','-Q3':' Q3','-Q4':' Q4'};
-  const preview = document.getElementById('periodo-preview');
-  if (preview) preview.textContent = anno + (labels[tipo] || tipo);
+// ── Single file ──
+async function handleSingle(settore, periodo) {
+  const fd = new FormData();
+  fd.append('file', state.files.a);
+  const res = await fetch(`${API}/upload?settore=${encodeURIComponent(settore)}&periodo_override=${encodeURIComponent(periodo)}`, {method:'POST',body:fd});
+  if (!res.ok) { let m='Errore server'; try{const e=await res.json();m=e.detail||m;}catch(_){} throw new Error(m); }
+  const report = await res.json();
+  state.reports[report.client_id] = report;
+  state.active = report.client_id;
+  state.compareResult = null;
+  updateClientList();
+  renderSingleReport(report);
+  showToast(`Cliente ${report.client_id} — analisi completata ✓`,'success');
+  setTimeout(() => { loadAndRenderBenchmark(report); initCompareAndTrend(report.client_id, report.periodo); }, 300);
 }
-document.addEventListener('change', e => {
-  if (e.target.id === 'periodo-anno' || e.target.id === 'periodo-tipo') updatePeriodoPreview();
-});
-document.addEventListener('input', e => {
-  if (e.target.id === 'periodo-anno') updatePeriodoPreview();
-});
-updatePeriodoPreview();
 
-
-const FORFETTARIO_SOGLIA = 85000;
-const state = { reports: {}, active: null, compareData: {}, trendData: {} };
-
-const fmt    = n => new Intl.NumberFormat('it-IT', {style:'currency', currency:'EUR', maximumFractionDigits:2}).format(n);
-const fmtPct = n => n.toFixed(2).replace('.', ',') + '%';
-
-// ── Upload ──
-document.getElementById('file-input').addEventListener('change', e => {
-  const f = e.target.files[0]; if (f) handleFile(f); e.target.value = '';
-});
-const dz = document.getElementById('drop-zone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
-dz.addEventListener('drop', e => {
-  e.preventDefault(); dz.classList.remove('drag');
-  const f = e.dataTransfer.files[0]; if (f) handleFile(f);
-});
-
-async function handleFile(file) {
-  const ext = file.name.split('.').pop().toLowerCase();
-  if (!['xlsx','xls','xlsm'].includes(ext)) { showToast('Formato non supportato. Usa .xlsx', 'error'); return; }
-  showLoading('Analisi in corso…');
-  showToast('Caricamento e analisi in corso…');
-  const settore = document.getElementById('settore-select').value || 'altro';
-  const anno = document.getElementById('periodo-anno').value || new Date().getFullYear();
-  const tipo = document.getElementById('periodo-tipo').value || '';
-  const periodo = `${anno}${tipo}`;
-  const fd = new FormData(); fd.append('file', file);
-  try {
-    const res = await fetch(`${API}/upload?settore=${encodeURIComponent(settore)}&periodo_override=${encodeURIComponent(periodo)}`, { method: 'POST', body: fd });
-    if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Errore server'); }
-    const report = await res.json();
-    state.reports[report.client_id] = report;
-    state.active = report.client_id;
-    updateClientList();
-    renderReport(report.client_id);
-    showToast(`Cliente ${report.client_id} — analisi completata ✓`, 'success');
-  } catch(e) {
-    showToast('Errore: ' + e.message, 'error');
-    document.getElementById('main-content').innerHTML =
-      `<div class="landing"><div style="font-size:3rem;">⚠️</div><h2>Errore</h2><p>${e.message}</p></div>`;
-  }
+// ── Compare two files ──
+async function handleCompare(settore, periodoA, periodoB) {
+  const fd = new FormData();
+  fd.append('file_a', state.files.a);
+  fd.append('file_b', state.files.b);
+  const res = await fetch(
+    `${API}/compare-upload?settore=${encodeURIComponent(settore)}&periodo_a=${encodeURIComponent(periodoA)}&periodo_b=${encodeURIComponent(periodoB)}`,
+    {method:'POST', body:fd}
+  );
+  if (!res.ok) { let m='Errore server'; try{const e=await res.json();m=e.detail||m;}catch(_){} throw new Error(m); }
+  const data = await res.json();
+  state.compareResult = data;
+  state.reports[data.report_a.client_id] = data.report_a;
+  state.active = data.report_a.client_id;
+  updateClientList();
+  renderCompareReport(data);
+  showToast(`Confronto ${periodoA} vs ${periodoB} completato ✓`,'success');
+  setTimeout(() => initCompareAndTrend(data.report_a.client_id, data.report_a.periodo), 400);
 }
 
 function showLoading(msg) {
-  document.getElementById('main-content').innerHTML =
-    `<div class="spinner-wrap"><div class="spinner"></div>
-     <span style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">${msg}</span></div>`;
+  document.getElementById('main-content').innerHTML=`<div class="spinner-wrap"><div class="spinner"></div><span style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">${msg}</span></div>`;
 }
 
 // ── Client list ──
 function updateClientList() {
   const list = document.getElementById('client-list');
   const ids = Object.keys(state.reports);
-  if (!ids.length) { list.innerHTML = '<div class="empty-state">Nessun cliente caricato</div>'; return; }
+  if (!ids.length) { list.innerHTML='<div class="empty-state">Nessun cliente</div>'; return; }
   list.innerHTML = ids.map(id => `
     <div class="client-item ${state.active===id?'active':''}" onclick="selectClient('${id}')">
       <span class="client-badge">${id}</span>
       <span>Cliente ${id}</span>
-      <span style="margin-left:auto;font-family:var(--mono);font-size:.63rem;opacity:.6">
-        ${state.reports[id].periodo}
-      </span>
+      <span class="client-year">${state.reports[id].periodo}</span>
     </div>`).join('');
 }
-function selectClient(id) { state.active = id; updateClientList(); renderReport(id); }
-
-// ── Parse AI ──
-function parseAI(raw) {
-  if (!raw) return null;
-  try { return JSON.parse(raw.replace(/```json|```/g, '').trim()); }
-  catch(e) { return null; }
+function selectClient(id) {
+  state.active=id; updateClientList();
+  if (state.compareResult && state.compareResult.report_a.client_id===id) {
+    renderCompareReport(state.compareResult);
+  } else if (state.reports[id]) {
+    renderSingleReport(state.reports[id]);
+    setTimeout(()=>{ loadAndRenderBenchmark(state.reports[id]); initCompareAndTrend(id,state.reports[id].periodo); },300);
+  }
 }
 
-// ── PDF ──
-function exportPDF(clientId) {
-  const r = state.reports[clientId]; if (!r) return;
-  document.getElementById('print-title').textContent = `Analisi Professionisti — Cliente ${r.client_id}`;
-  document.getElementById('print-meta').textContent  = `Periodo ${r.periodo} · Generato il ${new Date().toLocaleDateString('it-IT')}`;
+function parseAI(raw) {
+  if(!raw) return null;
+  try { return JSON.parse(raw.replace(/```json|```/g,'').trim()); } catch(e) { return null; }
+}
+
+// ── Settori ──
+async function loadSettori() {
+  try {
+    const res = await fetch(`${API}/settori`);
+    if (!res.ok) throw new Error();
+    const list = JSON.parse(await res.text());
+    const sel = document.getElementById('settore-select');
+    sel.innerHTML = list.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
+  } catch(e) {
+    document.getElementById('settore-select').innerHTML = `
+      <option value="medico">Medico specialista</option>
+      <option value="dentista">Odontoiatra / Dentista</option>
+      <option value="avvocato">Avvocato</option>
+      <option value="ingegnere">Ingegnere</option>
+      <option value="architetto">Architetto</option>
+      <option value="geometra">Geometra</option>
+      <option value="consulente_lavoro">Consulente del lavoro</option>
+      <option value="commercialista">Commercialista</option>
+      <option value="psicologo">Psicologo</option>
+      <option value="fisioterapista">Fisioterapista</option>
+      <option value="consulente_it">Consulente IT</option>
+      <option value="consulente">Consulente</option>
+      <option value="agente_finanziario">Agente finanziario</option>
+      <option value="ncc_taxi">NCC / Taxi</option>
+      <option value="designer">Designer</option>
+      <option value="altro">Altro</option>`;
+  }
+}
+loadSettori();
+
+// ── PDF export ──
+function exportPDF(clientId, periodo) {
+  document.getElementById('print-title').textContent = `Analisi Professionisti — Cliente ${clientId}`;
+  document.getElementById('print-meta').textContent  = `Periodo: ${periodo} · Generato il ${new Date().toLocaleDateString('it-IT')} · Corti Fumagalli Associati`;
   window.print();
 }
 
-// ── Render ──
-function renderReport(clientId) {
-  const r = state.reports[clientId]; if (!r) return;
+// ─────────────────────────────────────────────────────────────
+// Render — singolo
+// ─────────────────────────────────────────────────────────────
+function renderSingleReport(r) {
   const ai = parseAI(r.commento_ai);
-  const costs = (r.accounts||[])
-    .filter(a => a.tipo === 'costo')
-    .sort((a,b) => (b.pagamenti+Math.abs(b.rettifiche)) - (a.pagamenti+Math.abs(a.rettifiche)));
-  const maxCost = costs.length ? costs[0].pagamenti + Math.abs(costs[0].rettifiche) : 1;
+  const isQ = r.periodo && r.periodo.includes('-Q');
+  const mesi = r.mesi_periodo || 12;
+  const ricaviAnn = r.ricavi_annualizzati || r.ricavi;
+  const costs = (r.accounts||[]).filter(a=>a.tipo==='costo').sort((a,b)=>(b.pagamenti+Math.abs(b.rettifiche))-(a.pagamenti+Math.abs(a.rettifiche)));
+  const maxCost = costs.length?(costs[0].pagamenti+Math.abs(costs[0].rettifiche)):1;
   const top5 = costs.slice(0,5);
-  const marginColor  = r.margine_percentuale >= 50 ? 'positive' : r.margine_percentuale >= 25 ? '' : 'warning';
-  const costRatio    = (r.costi / r.ricavi * 100).toFixed(1);
-  const kpiAccentM   = r.margine_percentuale >= 50 ? '#1a5c3a' : r.margine_percentuale >= 25 ? '#b8975a' : '#8c2a0e';
+  const mc = r.margine_percentuale>=50?'positive':r.margine_percentuale>=25?'':'warning';
+  const costR = (r.costi/r.ricavi*100).toFixed(1);
 
-  const forfettarioHTML = r.ricavi < FORFETTARIO_SOGLIA ? `
+  const qNote = isQ ? `<div style="background:#fff3e8;border:1px solid #e9a800;border-radius:3px;padding:.65rem 1rem;margin-bottom:1.5rem;font-size:.82rem;color:#5a3a00;font-family:var(--mono)">
+    ⚠ Dato trimestrale (${mesi} mesi) — ricavi annualizzati: <strong>${fmt(ricaviAnn)}</strong>. Le soglie annuali (es. forfettario) sono valutate sul dato ragguagliato.
+  </div>` : '';
+
+  const forfHtml = ricaviAnn < 85000 ? `
     <div class="forfettario-alert">
       <span class="alert-icon">💡</span>
       <div>
         <div class="alert-title">Valutare il Regime Forfettario</div>
         <div class="alert-body">
-          I ricavi del periodo (<strong>${fmt(r.ricavi)}</strong>) sono al di sotto della soglia di
-          <strong>€85.000</strong> prevista per l'accesso al regime forfettario.
-          Questo regime prevede un'<strong>imposta sostitutiva al 15%</strong>
-          (ridotta al <strong>5% per i primi 5 anni</strong>), l'esonero dagli obblighi IVA e una significativa
-          semplificazione degli adempimenti contabili. Si consiglia di verificare l'assenza di cause ostative:
-          redditi da lavoro dipendente superiori a €30.000, partecipazioni in società di persone o srl trasparenti,
-          utilizzo prevalente di beni/servizi del datore di lavoro.
+          Ricavi ${isQ?'annualizzati':'del periodo'} <strong>${fmt(ricaviAnn)}</strong> sotto la soglia di <strong>€85.000</strong>.
+          ${isQ ? `<em>(Dato trimestrale: €${fmt(r.ricavi)} × ${(12/mesi).toFixed(1)} = €${fmt(ricaviAnn)} annualizzati)</em><br>` : ''}
+          Imposta sostitutiva al <strong>15%</strong> (5% primi 5 anni), esonero IVA, contabilità semplificata.
+          Verificare cause ostative prima di procedere.
         </div>
       </div>
     </div>` : '';
 
-  let aiHTML = '';
+  let aiHtml = '';
   if (ai) {
-    aiHTML = `
-    <div class="ai-grid">
-      <div class="ai-section analisi full">
-        <div class="ai-section-header"><span class="ai-section-icon">📊</span><span class="ai-section-title">Analisi generale</span></div>
-        <div class="ai-section-body">${ai.analisi_generale||''}</div>
-      </div>
-      <div class="ai-section attenzione">
-        <div class="ai-section-header"><span class="ai-section-icon">⚠️</span><span class="ai-section-title">Punti di attenzione</span></div>
-        <div class="ai-section-body">${ai.punti_attenzione||''}</div>
-      </div>
-      <div class="ai-section fiscale">
-        <div class="ai-section-header"><span class="ai-section-icon">💡</span><span class="ai-section-title">Ottimizzazione fiscale</span></div>
-        <div class="ai-section-body">
-          ${ai.ottimizzazione_fiscale||''}
-          ${buildTaxItems(r.accounts||[], r.ricavi)}
-        </div>
-      </div>
-      <div class="ai-section raccomandazioni full">
-        <div class="ai-section-header"><span class="ai-section-icon">✅</span><span class="ai-section-title">Raccomandazioni</span></div>
-        <div class="ai-section-body">${ai.raccomandazioni||''}</div>
-      </div>
-    </div>`;
-  } else {
-    aiHTML = `<div class="ai-section analisi" style="margin-bottom:1.5rem">
-      <div class="ai-section-header"><span class="ai-section-icon">📊</span><span class="ai-section-title">Commento</span></div>
-      <div class="ai-section-body">${r.commento_ai||'—'}</div>
+    aiHtml = `<div class="ai-grid">
+      <div class="ai-section analisi full"><div class="ai-section-header"><span class="ai-section-icon">📊</span><span class="ai-section-title">Analisi generale</span></div><div class="ai-section-body">${ai.analisi_generale||''}</div></div>
+      <div class="ai-section attenzione"><div class="ai-section-header"><span class="ai-section-icon">⚠️</span><span class="ai-section-title">Punti di attenzione</span></div><div class="ai-section-body">${ai.punti_attenzione||''}</div></div>
+      <div class="ai-section fiscale"><div class="ai-section-header"><span class="ai-section-icon">💡</span><span class="ai-section-title">Ottimizzazione fiscale</span></div><div class="ai-section-body">${ai.ottimizzazione_fiscale||''}${buildTaxItems(r.accounts||[],ricaviAnn,isQ)}</div></div>
+      <div class="ai-section raccomandazioni full"><div class="ai-section-header"><span class="ai-section-icon">✅</span><span class="ai-section-title">Raccomandazioni</span></div><div class="ai-section-body">${ai.raccomandazioni||''}</div></div>
     </div>`;
   }
 
   document.getElementById('main-content').innerHTML = `
-    <div class="print-header">
-      <div class="print-logo">Corti Fumagalli Associati — Analisi Professionisti</div>
-      <div class="print-sub">Studio Professionale · Milano · Lissone</div>
-      <div class="print-meta" id="print-meta"></div>
-      <div id="print-title" style="display:none"></div>
-    </div>
-
+    <div class="print-header"><div class="print-logo">Corti Fumagalli Associati<span>Analisi Professionisti</span></div><hr class="print-divider"/><p class="print-meta" id="print-meta"></p><p class="print-meta" id="print-title" style="color:var(--navy);font-weight:600;margin-top:.2rem"></p></div>
     <div class="report-header">
       <h2>Cliente ${r.client_id}</h2>
       <span class="periodo-badge">${r.periodo}</span>
       <span class="periodo-badge" style="background:${r.file_type==='conto_economico'?'#1a5c3a':'var(--navy)'}">
-        ${r.file_type === 'conto_economico' ? 'Conto Economico' : 'Prospetto Reddito'}
+        ${r.file_type==='conto_economico'?'Conto Economico':'Prospetto Reddito'}
       </span>
-      <button class="pdf-btn" onclick="exportPDF('${r.client_id}')">⬇ Esporta PDF</button>
+      ${isQ?`<span class="periodo-badge" style="background:#7a5c00">Q · ${mesi} mesi</span>`:''}
+      <button class="pdf-btn" onclick="exportPDF('${r.client_id}','${r.periodo}')">⬇ PDF</button>
+    </div>
+    ${qNote}${forfHtml}
+    <div class="kpi-grid" id="kpi-grid-main">
+      <div class="kpi-card" style="--kpi-color:var(--navy-mid)"><div class="kpi-label">Ricavi${isQ?' (trimestre)':''}</div><div class="kpi-value">${fmt(r.ricavi)}</div><div class="kpi-sub">${isQ?`≈ ${fmt(ricaviAnn)} annualizzati`:'incassi del periodo'}</div></div>
+      <div class="kpi-card" style="--kpi-color:#8b2a0f"><div class="kpi-label">Costi totali</div><div class="kpi-value">${fmt(r.costi)}</div><div class="kpi-sub">${costR}% sui ricavi</div></div>
+      <div class="kpi-card" style="--kpi-color:var(--positive)"><div class="kpi-label">Margine operativo</div><div class="kpi-value ${mc}">${fmt(r.margine)}</div><div class="kpi-sub">ricavi − costi</div></div>
+      <div class="kpi-card" style="--kpi-color:${r.margine_percentuale>=50?'var(--positive)':r.margine_percentuale>=25?'var(--gold)':'var(--warn)'}"><div class="kpi-label">Margine %</div><div class="kpi-value ${mc}">${fmtPct(r.margine_percentuale)}</div><div class="kpi-sub">margine / ricavi</div></div>
+    </div>
+    <div class="compare-toggle" id="compare-toggle-wrap" style="display:none">
+      <label><input type="checkbox" id="compare-check" onchange="toggleCompare('${r.client_id}','${r.periodo}')"> Confronta con periodo precedente</label>
+      <select class="compare-type-select" id="compare-type" onchange="toggleCompare('${r.client_id}','${r.periodo}')">
+        <option value="periodo_precedente">Periodo precedente</option>
+        <option value="stesso_periodo_anno_prima">Stesso periodo anno prima</option>
+      </select>
+    </div>
+    <div id="compare-panel"></div>
+    <div class="trend-section" id="trend-section" style="display:none"></div>
+    ${aiHtml}
+    ${renderCharts(r, top5, maxCost)}
+    ${renderAccountsTable(r)}
+    <div class="report-footer">Corti Fumagalli Associati — Analisi Professionisti · Uso interno riservato</div>`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Render — confronto due periodi
+// ─────────────────────────────────────────────────────────────
+function renderCompareReport(data) {
+  const a = data.report_a, b = data.report_b;
+  const aiConfronto = parseAI(data.commento_confronto);
+  const aiA = parseAI(a.commento_ai);
+  const aiB = parseAI(b.commento_ai);
+
+  const deltaMap = {};
+  (data.deltas||[]).forEach(d => deltaMap[d.campo]=d);
+
+  function kpiDelta(campo, invertColors) {
+    const d = deltaMap[campo]; if (!d) return '';
+    const sign = d.delta_assoluto>=0?'▲':'▼';
+    const pct = campo==='margine_percentuale'
+      ? `${d.delta_assoluto>0?'+':''}${d.delta_assoluto.toFixed(1)}pp`
+      : `${d.delta_percentuale>0?'+':''}${d.delta_percentuale.toFixed(1)}%`;
+    const cls = invertColors
+      ? (d.delta_assoluto>0?'delta-down':'delta-up')
+      : (d.delta_assoluto>=0?'delta-up':'delta-down');
+    return `<div class="kpi-delta ${cls}">${sign} ${pct}</div>`;
+  }
+
+  let aiHtml = '';
+  if (aiConfronto) {
+    aiHtml = `<div class="ai-grid" style="margin-bottom:2rem">
+      <div class="ai-section analisi full">
+        <div class="ai-section-header"><span class="ai-section-icon">⚖️</span><span class="ai-section-title">Sintesi confronto ${a.periodo} vs ${b.periodo}</span></div>
+        <div class="ai-section-body">${aiConfronto.sintesi_confronto||''}</div>
+      </div>
+      <div class="ai-section attenzione">
+        <div class="ai-section-header"><span class="ai-section-icon">📈</span><span class="ai-section-title">Analisi variazioni</span></div>
+        <div class="ai-section-body">${aiConfronto.analisi_variazioni||''}</div>
+      </div>
+      <div class="ai-section fiscale">
+        <div class="ai-section-header"><span class="ai-section-icon">💡</span><span class="ai-section-title">Ottimizzazione fiscale</span></div>
+        <div class="ai-section-body">${aiConfronto.ottimizzazione_fiscale||''}</div>
+      </div>
+      <div class="ai-section raccomandazioni full">
+        <div class="ai-section-header"><span class="ai-section-icon">✅</span><span class="ai-section-title">Raccomandazioni</span></div>
+        <div class="ai-section-body">${aiConfronto.raccomandazioni||''}</div>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="print-header"><div class="print-logo">Corti Fumagalli Associati<span>Analisi Professionisti — Confronto Periodi</span></div><hr class="print-divider"/><p class="print-meta" id="print-meta"></p><p class="print-meta" id="print-title"></p></div>
+
+    <div class="report-header">
+      <h2>Cliente ${a.client_id}</h2>
+      <span class="periodo-badge">${a.periodo}</span>
+      <span style="color:var(--muted);font-family:var(--mono);font-size:.75rem">vs</span>
+      <span class="periodo-badge" style="background:var(--accent2)">${b.periodo}</span>
+      <button class="pdf-btn" onclick="exportPDF('${a.client_id}','${a.periodo} vs ${b.periodo}')">⬇ PDF</button>
     </div>
 
-    ${forfettarioHTML}
-
-    <div class="kpi-grid">
-      <div class="kpi-card" style="--kpi-accent:var(--cf-navy-mid)">
-        <div class="kpi-label">Ricavi totali</div>
-        <div class="kpi-value">${fmt(r.ricavi)}</div>
-        <div class="kpi-sub">incassi del periodo</div>
+    <!-- KPI confronto -->
+    <div class="kpi-grid" id="kpi-grid-main" style="margin-bottom:.75rem">
+      <div class="kpi-card" style="--kpi-color:var(--navy-mid)">
+        <div class="kpi-label">Ricavi A / B</div>
+        <div class="kpi-value" style="font-size:1.1rem">${fmt(a.ricavi)}</div>
+        <div class="kpi-sub">${fmt(b.ricavi)}</div>
+        ${kpiDelta('ricavi',false)}
       </div>
-      <div class="kpi-card" style="--kpi-accent:#8c2a0e">
-        <div class="kpi-label">Costi totali</div>
-        <div class="kpi-value">${fmt(r.costi)}</div>
-        <div class="kpi-sub">${costRatio}% sui ricavi</div>
+      <div class="kpi-card" style="--kpi-color:#8b2a0f">
+        <div class="kpi-label">Costi A / B</div>
+        <div class="kpi-value" style="font-size:1.1rem">${fmt(a.costi)}</div>
+        <div class="kpi-sub">${fmt(b.costi)}</div>
+        ${kpiDelta('costi',true)}
       </div>
-      <div class="kpi-card" style="--kpi-accent:var(--positive)">
-        <div class="kpi-label">Margine operativo</div>
-        <div class="kpi-value ${marginColor}">${fmt(r.margine)}</div>
-        <div class="kpi-sub">ricavi − costi</div>
+      <div class="kpi-card" style="--kpi-color:var(--positive)">
+        <div class="kpi-label">Margine A / B</div>
+        <div class="kpi-value" style="font-size:1.1rem">${fmt(a.margine)}</div>
+        <div class="kpi-sub">${fmt(b.margine)}</div>
+        ${kpiDelta('margine',false)}
       </div>
-      <div class="kpi-card" style="--kpi-accent:${kpiAccentM}">
-        <div class="kpi-label">Margine %</div>
-        <div class="kpi-value ${marginColor}">${fmtPct(r.margine_percentuale)}</div>
-        <div class="kpi-sub">margine / ricavi</div>
+      <div class="kpi-card" style="--kpi-color:var(--gold)">
+        <div class="kpi-label">Margine % A / B</div>
+        <div class="kpi-value" style="font-size:1.1rem">${fmtPct(a.margine_percentuale)}</div>
+        <div class="kpi-sub">${fmtPct(b.margine_percentuale)}</div>
+        ${kpiDelta('margine_percentuale',false)}
       </div>
     </div>
+    <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-bottom:1.5rem;text-align:center">
+      Le frecce ▲▼ indicano la variazione di <strong style="color:var(--navy)">${a.periodo}</strong> rispetto a <strong style="color:var(--accent2)">${b.periodo}</strong>
+    </div>
 
-    <!-- Trend section -->
     <div class="trend-section" id="trend-section" style="display:none"></div>
 
-    ${aiHTML}
+    ${aiHtml}
 
+    <!-- Analisi individuali side by side -->
+    <div class="content-grid" style="margin-bottom:2rem">
+      <div class="panel">
+        <div class="panel-header" style="background:var(--navy)"><span class="panel-title" style="color:var(--gold-light)">Analisi ${a.periodo}</span></div>
+        <div class="panel-body" style="font-size:.84rem;line-height:1.7">${aiA?.analisi_generale||'—'}</div>
+      </div>
+      <div class="panel">
+        <div class="panel-header" style="background:var(--accent2)"><span class="panel-title" style="color:white">Analisi ${b.periodo}</span></div>
+        <div class="panel-body" style="font-size:.84rem;line-height:1.7">${aiB?.analisi_generale||'—'}</div>
+      </div>
+    </div>
+
+    <!-- Tabelle affiancate -->
     <div class="content-grid">
-      <div class="panel">
-        <div class="panel-header"><span class="panel-title">Top 5 voci di costo</span></div>
-        <div class="panel-body">
-          <div class="bar-chart">
-            ${top5.map(c => {
-              const v = c.pagamenti + Math.abs(c.rettifiche);
-              const pct = (v / maxCost * 100).toFixed(1);
-              const label = c.descrizione.replace(/^\d+ - /, '').substring(0, 42);
-              return `<div class="bar-row">
-                <span class="bar-label" title="${c.descrizione}">${label}</span>
-                <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-                <span class="bar-amount">${fmt(v)}</span>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-header"><span class="panel-title">Composizione del risultato</span></div>
-        <div class="panel-body">
-          <div class="donut-wrap">
-            ${donutSVG(r.ricavi, r.costi, r.margine)}
-            <div class="donut-legend">
-              <div class="legend-item">
-                <span class="legend-dot" style="background:var(--cf-navy-mid)"></span>
-                <div><div style="font-weight:500">Ricavi</div>
-                <div style="font-family:var(--mono);font-size:.71rem;color:var(--muted)">${fmt(r.ricavi)}</div></div>
-              </div>
-              <div class="legend-item">
-                <span class="legend-dot" style="background:#8c2a0e"></span>
-                <div><div style="font-weight:500">Costi</div>
-                <div style="font-family:var(--mono);font-size:.71rem;color:var(--muted)">${fmt(r.costi)}</div></div>
-              </div>
-              <div class="legend-item">
-                <span class="legend-dot" style="background:var(--cf-gold)"></span>
-                <div><div style="font-weight:500">Margine</div>
-                <div style="font-family:var(--mono);font-size:.71rem;color:var(--muted)">${fmt(r.margine)}</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div class="accounts-panel">${renderAccountsTableInner(a, a.periodo)}</div>
+      <div class="accounts-panel">${renderAccountsTableInner(b, b.periodo)}</div>
     </div>
 
-    <!-- Benchmark panel -->
-    <div class="benchmark-section" id="bench-section" style="display:none">
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Benchmark di settore</span>
-          <span id="peer-badge-container"></span>
-        </div>
-        <div class="panel-body" id="bench-body"></div>
-      </div>
-    </div>
-
-        <div class="accounts-panel">
-      <div class="panel-header"><span class="panel-title">Dettaglio conti — ${(r.accounts||[]).length} voci</span></div>
-      <table>
-        <thead>
-          <tr>
-            <th>Cod.</th><th>Descrizione</th><th>Tipo</th>
-            <th class="num">Incassi</th><th class="num">Pagamenti</th><th class="num">Rettifiche</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${(r.accounts||[]).map(a => `
-            <tr>
-              <td style="font-family:var(--mono);font-size:.71rem;color:var(--muted)">${a.codice||'—'}</td>
-              <td>${a.descrizione.replace(/^\d+ - /, '')}</td>
-              <td><span class="tipo-pill ${a.tipo}">${a.tipo}</span></td>
-              <td class="num">${a.incassi  ? fmt(a.incassi)           : '—'}</td>
-              <td class="num">${a.pagamenti? fmt(a.pagamenti)         : '—'}</td>
-              <td class="num">${a.rettifiche ? fmt(Math.abs(a.rettifiche)) : '—'}</td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`;
+    <div class="report-footer">Corti Fumagalli Associati — Analisi Professionisti · Uso interno riservato</div>`;
 }
 
-// ── Tax pills ──
-// Fetch benchmarks.json and render benchmark panel after report is shown
+// ── Shared render helpers ──
+function renderCharts(r, top5, maxCost) {
+  return `<div class="content-grid">
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Top 5 voci di costo</span></div>
+      <div class="panel-body"><div class="bar-chart">${top5.map(c=>{const v=c.pagamenti+Math.abs(c.rettifiche);const pct=(v/maxCost*100).toFixed(1);const lbl=c.descrizione.replace(/^\d+ - /,'').substring(0,42);return`<div class="bar-row"><span class="bar-label" title="${c.descrizione}">${lbl}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--navy);opacity:.8"></div></div><span class="bar-amount">${fmt(v)}</span></div>`;}).join('')}</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Composizione risultato</span></div>
+      <div class="panel-body"><div class="donut-wrap">${donutSVG(r.ricavi,r.costi,r.margine)}<div class="donut-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--navy-mid)"></span><div><div style="font-weight:600">Ricavi</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">${fmt(r.ricavi)}</div></div></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#8b2a0f"></span><div><div style="font-weight:600">Costi</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">${fmt(r.costi)}</div></div></div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span><div><div style="font-weight:600">Margine</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">${fmt(r.margine)}</div></div></div>
+      </div></div></div>
+    </div>
+  </div>`;
+}
+
+function renderAccountsTable(r) {
+  return `<div class="accounts-panel" style="margin-bottom:2rem">${renderAccountsTableInner(r,r.periodo)}</div>`;
+}
+
+function renderAccountsTableInner(r, label) {
+  return `<div class="panel-header"><span class="panel-title">Dettaglio conti — ${label} (${(r.accounts||[]).length} voci)</span></div>
+  <table><thead><tr><th>Cod.</th><th>Descrizione</th><th>Tipo</th><th class="num">Incassi</th><th class="num">Pagamenti</th></tr></thead>
+  <tbody>${(r.accounts||[]).map(a=>`<tr>
+    <td style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">${a.codice||'—'}</td>
+    <td>${a.descrizione.replace(/^\d+ - /,'')}</td>
+    <td><span class="tipo-pill ${a.tipo}">${a.tipo}</span></td>
+    <td class="num">${a.incassi?fmt(a.incassi):'—'}</td>
+    <td class="num">${a.pagamenti?fmt(a.pagamenti):'—'}</td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function buildTaxItems(accounts, ricaviAnn, isQ) {
+  const items=[];
+  const has=kw=>accounts.some(a=>kw.test(a.descrizione.toLowerCase()));
+  if(ricaviAnn<85000) items.push({icon:'💡',cls:'forfettario',text:`<strong>Regime Forfettario</strong>: ricavi ${isQ?'annualizzati':''} €${ricaviAnn.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.')} < €85.000 — imposta sostitutiva 15%, esonero IVA.`});
+  if(!has(/formaz|aggiorn/)) items.push({icon:'📚',cls:'',text:'<strong>Formazione</strong>: nessuna spesa — integralmente deducibile.'});
+  if(!has(/previd|pensione/)) items.push({icon:'🏦',cls:'',text:'<strong>Previdenza integrativa</strong>: deducibile fino a €5.164,57/anno.'});
+  if(!items.length)return'';
+  return`<div class="tax-suggestions">${items.map(i=>`<div class="tax-item ${i.cls}"><span class="tax-icon">${i.icon}</span><span>${i.text}</span></div>`).join('')}</div>`;
+}
+
+function donutSVG(ricavi,costi,margine){
+  const total=ricavi||1,cp=(costi/total)*100,mp=(Math.max(margine,0)/total)*100;
+  const cx=70,cy=70,r=52,s=22,c=2*Math.PI*r;
+  const arc=(pct,off,col)=>`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${s}" stroke-dasharray="${(pct/100)*c} ${c-(pct/100)*c}" stroke-dashoffset="${-off*c/100+c/4}" transform="rotate(-90 ${cx} ${cy})"/>`;
+  return`<svg width="140" height="140" viewBox="0 0 140 140"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e8e4da" stroke-width="${s}"/>${arc(cp,0,'#8b2a0f')}${arc(mp,cp,'#b8943f')}<text x="${cx}" y="${cy-6}" text-anchor="middle" font-family="Playfair Display,serif" font-size="16" fill="#1a2744" font-weight="600">${mp.toFixed(0)}%</text><text x="${cx}" y="${cy+12}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#7a7668" letter-spacing="0.1em">MARGINE</text></svg>`;
+}
+
+// ── Benchmark ──
 async function loadAndRenderBenchmark(r) {
   try {
-    const benchRes = await fetch(`${API}/benchmarks/raw`);
-    if (!benchRes.ok) return;
-    const text = await benchRes.text();
-    const benchmarks = JSON.parse(text);
-    renderBenchmark(r, benchmarks);
-  } catch(e) {
-    // Silently skip benchmark panel if unavailable
-  }
+    const res=await fetch(`${API}/benchmarks/raw`);
+    if(!res.ok)return;
+    renderBenchmark(r,JSON.parse(await res.text()));
+  } catch(e){}
 }
 
-function buildTaxItems(accounts, ricavi) {
-  const items = [];
-  const has = kw => accounts.some(a => kw.test(a.descrizione.toLowerCase()));
-  if (ricavi < FORFETTARIO_SOGLIA)
-    items.push({icon:'💡', cls:'forfettario', text:`<strong>Regime Forfettario</strong>: ricavi sotto €85.000. Imposta sostitutiva 15% (o 5% per i primi 5 anni), esonero IVA, contabilità semplificata.`});
-  if (!has(/formaz|aggiorn|corso|master/))
-    items.push({icon:'📚', cls:'', text:`<strong>Formazione professionale</strong>: nessuna spesa rilevata. Corsi e aggiornamenti sono integralmente deducibili.`});
-  if (!has(/previd|pensione|fondo pens/))
-    items.push({icon:'🏦', cls:'', text:`<strong>Previdenza integrativa</strong>: considerare versamenti a fondi pensione (deducibili fino a €5.164,57/anno).`});
-  const tel = accounts.find(a => /telefon|mobile/.test(a.descrizione.toLowerCase()));
-  if (tel && tel.pagamenti > 500)
-    items.push({icon:'📱', cls:'', text:`<strong>Telefonia</strong>: ${fmt(tel.pagamenti)} deducibile all'80%. Verificare che tutta la documentazione sia in ordine.`});
-  const auto = accounts.find(a => /carburant|veicol|auto/.test(a.descrizione.toLowerCase()));
-  if (auto)
-    items.push({icon:'🚗', cls:'', text:`<strong>Spese auto</strong>: ${fmt(auto.pagamenti)} con deducibilità al 20%. Valutare l'uso del rimborso chilometrico.`});
-  if (!has(/software|licenz|digitale|cloud/))
-    items.push({icon:'💻', cls:'', text:`<strong>Software e tecnologia</strong>: investimenti in software professionale sono deducibili al 100%.`});
-  const labor = accounts.find(a => /lavoro autonomo|prestaz.+terzi/.test(a.descrizione.toLowerCase()));
-  if (labor && labor.pagamenti > 100000)
-    items.push({icon:'👥', cls:'', text:`<strong>Lavoro autonomo</strong>: voce rilevante (${fmt(labor.pagamenti)}). Verificare regolarità delle fatture e partite IVA dei collaboratori.`});
-  if (!items.length) return '';
-  return `<div class="tax-suggestions">${items.map(i =>
-    `<div class="tax-item ${i.cls}"><span class="tax-icon">${i.icon}</span><span>${i.text}</span></div>`
-  ).join('')}</div>`;
+function renderBenchmark(r,benchmarks){
+  const sec=document.getElementById('bench-section');
+  const body=document.getElementById('bench-body');
+  if(!sec||!body)return;
+  const bench=benchmarks[r.settore]||benchmarks['altro'];
+  if(!bench){sec.style.display='none';return;}
+  sec.style.display='block';
+  const mp=r.margine_percentuale,bm=bench.margine_pct_medio,diff=mp-bm;
+  const cls=diff>3?'above':diff<-3?'below':'inline';
+  const arr=diff>3?`▲ +${diff.toFixed(1)}pp`:diff<-3?`▼ ${diff.toFixed(1)}pp`:`≈ ${diff>0?'+':''}${diff.toFixed(1)}pp`;
+  body.innerHTML=`<div class="benchmark-grid" style="margin-bottom:1rem">
+    <div class="bench-card"><div class="bench-card-label">Margine % cliente</div><div class="bench-card-value">${mp.toFixed(1)}%<span class="bench-arrow ${cls}">${arr}</span></div><div class="bench-card-sub">Media settore: ${bm}% (range ${bench.margine_pct_min}–${bench.margine_pct_max}%)</div></div>
+    <div class="bench-card"><div class="bench-card-label">Ricavi cliente</div><div class="bench-card-value">${fmt(r.ricavi)}</div><div class="bench-card-sub">Media settore: ${fmt(bench.ricavi_medi||0)}</div></div>
+    <div class="bench-card"><div class="bench-card-label">Settore</div><div class="bench-card-value" style="font-size:.95rem">${bench.label}</div><div class="bench-card-sub">${bench.note_settore||''}</div></div>
+  </div>${buildBenchBars(r,bench)}`;
 }
 
-// ── Donut ──
-function renderBenchmark(r, benchmarks) {
-  const sec = document.getElementById('bench-section');
-  const body = document.getElementById('bench-body');
-  const peerCont = document.getElementById('peer-badge-container');
-  if (!sec || !body) return;
-
-  const bench = benchmarks[r.settore] || benchmarks['altro'];
-  if (!bench) { sec.style.display = 'none'; return; }
-  sec.style.display = 'block';
-
-  const mp = r.margine_percentuale;
-  const bm = bench.margine_pct_medio;
-  const bmin = bench.margine_pct_min;
-  const bmax = bench.margine_pct_max;
-  const diff = mp - bm;
-  const arrowCls = diff > 3 ? 'above' : diff < -3 ? 'below' : 'inline';
-  const arrowTxt = diff > 3 ? `▲ +${diff.toFixed(1)}pp` : diff < -3 ? `▼ ${diff.toFixed(1)}pp` : `≈ ${diff>0?'+':''}${diff.toFixed(1)}pp`;
-
-  // Peer badge
-  const ai = r.commento_ai ? (() => { try { return JSON.parse(r.commento_ai); } catch(e) { return null; } })() : null;
-  peerCont.innerHTML = '';
-
-  // KPI cards
-  const ricaviRef = bench.ricavi_medi || 1;
-  const maxBar = Math.max(r.ricavi, ricaviRef) * 1.1;
-
-  body.innerHTML = `
-    <div class="benchmark-grid" style="margin-bottom:1.25rem">
-      <div class="bench-card">
-        <div class="bench-card-label">Margine % cliente</div>
-        <div class="bench-card-value">${mp.toFixed(1)}%<span class="bench-arrow ${arrowCls}">${arrowTxt}</span></div>
-        <div class="bench-card-sub">Media settore: ${bm}% (range ${bmin}%–${bmax}%)</div>
-      </div>
-      <div class="bench-card">
-        <div class="bench-card-label">Ricavi cliente</div>
-        <div class="bench-card-value">${fmt(r.ricavi)}</div>
-        <div class="bench-card-sub">Media settore: ${fmt(ricaviRef)}</div>
-      </div>
-      <div class="bench-card">
-        <div class="bench-card-label">Settore di riferimento</div>
-        <div class="bench-card-value" style="font-size:.95rem">${bench.label}</div>
-        <div class="bench-card-sub" style="line-height:1.5">${bench.note_settore || ''}</div>
-      </div>
-    </div>
-
-    <div style="margin-bottom:.5rem">
-      <div style="font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.75rem">
-        Confronto visivo — Cliente (blu) vs. Benchmark settore (oro)
-      </div>
-      ${buildBenchBars(r, bench)}
-    </div>
-  `;
-}
-
-function buildBenchBars(r, bench) {
-  const items = [
-    { label: 'Margine %', client: r.margine_percentuale, ref: bench.margine_pct_medio, max: Math.max(r.margine_percentuale, bench.margine_pct_max || 80) * 1.1, suffix: '%', isPercent: true },
-    { label: 'Costo lavoro / ricavi', client: r.ricavi > 0 ? _getCostoLavoro(r) / r.ricavi * 100 : 0, ref: bench.costo_lavoro_su_ricavi, max: Math.max(_getCostoLavoro(r)/r.ricavi*100, bench.costo_lavoro_su_ricavi || 25) * 1.3 + 5, suffix: '%', isPercent: true },
-    { label: 'Costo autonomi / ricavi', client: r.ricavi > 0 ? _getCostoAutonomi(r) / r.ricavi * 100 : 0, ref: bench.costo_autonomo_su_ricavi, max: Math.max(_getCostoAutonomi(r)/r.ricavi*100, bench.costo_autonomo_su_ricavi || 25) * 1.3 + 5, suffix: '%', isPercent: true },
+function buildBenchBars(r,bench){
+  const items=[
+    {label:'Margine %',client:r.margine_percentuale,ref:bench.margine_pct_medio,max:Math.max(r.margine_percentuale,bench.margine_pct_max||80)*1.1,suffix:'%'},
+    {label:'Costo lavoro',client:_getCostoLavoro(r)/r.ricavi*100||0,ref:bench.costo_lavoro_su_ricavi,max:Math.max((_getCostoLavoro(r)/r.ricavi*100)||0,bench.costo_lavoro_max||30)*1.3+5,suffix:'%'},
   ];
-  return items.map(it => {
-    const cPct = Math.min((it.client / it.max) * 100, 100).toFixed(1);
-    const rPct = Math.min((it.ref / it.max) * 100, 100).toFixed(1);
-    return `<div class="bench-bar-row">
-      <span class="bench-bar-label">${it.label}</span>
-      <div class="bench-bar-wrap">
-        <div class="bench-bar-client" style="width:${cPct}%"></div>
-        <div class="bench-bar-tick" style="left:${rPct}%"></div>
-      </div>
-      <span class="bench-bar-amounts">${it.client.toFixed(1)}${it.suffix} <span style="color:var(--gold)">| ${it.ref}${it.suffix}</span></span>
-    </div>`;
+  return items.map(it=>{const cP=Math.min((it.client/it.max)*100,100).toFixed(1);const rP=Math.min((it.ref/it.max)*100,100).toFixed(1);
+    return`<div class="bench-bar-row"><span class="bench-bar-label">${it.label}</span><div class="bench-bar-wrap"><div class="bench-bar-client" style="width:${cP}%"></div><div class="bench-bar-tick" style="left:${rP}%"></div></div><span class="bench-bar-amounts">${it.client.toFixed(1)}${it.suffix} <span style="color:var(--gold)">| ${it.ref}${it.suffix}</span></span></div>`;
   }).join('');
 }
+function _getCostoLavoro(r){return(r.accounts||[]).filter(a=>/retribuz|personale|dipendente|inps/i.test(a.descrizione)).reduce((s,a)=>s+a.pagamenti,0);}
 
-function _getCostoLavoro(r) {
-  return (r.accounts||[]).filter(a => /retribuz|personale|dipendente|inps/i.test(a.descrizione))
-    .reduce((s,a) => s + a.pagamenti, 0);
-}
-function _getCostoAutonomi(r) {
-  return (r.accounts||[]).filter(a => /lavoro autonomo|prestaz.+terzi/i.test(a.descrizione))
-    .reduce((s,a) => s + a.pagamenti, 0);
-}
-
-function donutSVG(ricavi, costi, margine) {
-  const total = ricavi, cp = (costi/total)*100, mp = (margine/total)*100;
-  const cx=70, cy=70, r=52, s=22, c=2*Math.PI*r;
-  const arc = (pct, off, col) =>
-    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${s}"
-     stroke-dasharray="${(pct/100)*c} ${c-(pct/100)*c}"
-     stroke-dashoffset="${-off*c/100+c/4}" transform="rotate(-90 ${cx} ${cy})"/>`;
-  return `<svg width="140" height="140" viewBox="0 0 140 140">
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#edeae3" stroke-width="${s}"/>
-    ${arc(cp, 0, '#8c2a0e')}${arc(mp, cp, '#b8975a')}
-    <text x="${cx}" y="${cy-6}" text-anchor="middle" font-family="Cormorant Garamond,serif"
-      font-size="17" fill="#0f1f3d" font-style="italic" font-weight="500">${mp.toFixed(0)}%</text>
-    <text x="${cx}" y="${cy+12}" text-anchor="middle" font-family="DM Mono,monospace"
-      font-size="7" fill="#7a7670" letter-spacing="0.1em">MARGINE</text>
-  </svg>`;
-}
-
-
-// ── Compare & Trend ──
-
+// ── Compare & Trend (from history) ──
 async function initCompareAndTrend(clientId, periodo) {
   try {
-    const trendRes = await fetch(`${API}/clients/${clientId}/trend`);
-    if (!trendRes.ok) return;
-    const trend = await trendRes.json();
-    state.trendData[clientId] = trend;
-    const toggle = document.getElementById('compare-toggle-wrap');
-    if (toggle && trend.length > 1) toggle.style.display = 'flex';
-    if (trend.length >= 2) renderTrendChart(trend, periodo);
-  } catch(e) {}
+    const res=await fetch(`${API}/clients/${clientId}/trend`);
+    if(!res.ok)return;
+    const trend=JSON.parse(await res.text());
+    state.trendData[clientId]=trend;
+    const toggle=document.getElementById('compare-toggle-wrap');
+    if(toggle&&trend.length>1)toggle.style.display='flex';
+    if(trend.length>=2)renderTrendChart(trend,periodo);
+  } catch(e){}
 }
 
-async function toggleCompare(clientId, periodo) {
-  const checked = document.getElementById('compare-check')?.checked;
-  const panel = document.getElementById('compare-panel');
-  if (!panel) return;
-  if (!checked) { panel.style.display = 'none'; renderKpiWithDeltas(null); return; }
-  const tipo = document.getElementById('compare-type')?.value || 'periodo_precedente';
-  try {
-    const res = await fetch(`${API}/clients/${clientId}/compare?periodo=${encodeURIComponent(periodo)}&tipo=${tipo}`);
-    if (!res.ok) { panel.style.display = 'none'; return; }
-    const data = await res.json();
-    if (!data.previous) {
-      panel.innerHTML = `<div style="padding:1rem 1.25rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);margin-bottom:1.5rem">⚠ Nessun dato disponibile per il periodo di confronto selezionato.</div>`;
-      panel.style.display = 'block'; return;
-    }
-    renderComparePanel(data);
-    renderKpiWithDeltas(data);
-    panel.style.display = 'block';
-  } catch(e) { panel.style.display = 'none'; }
+async function toggleCompare(clientId,periodo){
+  const checked=document.getElementById('compare-check')?.checked;
+  const panel=document.getElementById('compare-panel');
+  if(!panel)return;
+  if(!checked){panel.style.display='none';document.querySelectorAll('.kpi-delta').forEach(e=>e.remove());return;}
+  const tipo=document.getElementById('compare-type')?.value||'periodo_precedente';
+  try{
+    const res=await fetch(`${API}/clients/${clientId}/compare?periodo=${encodeURIComponent(periodo)}&tipo=${tipo}`);
+    if(!res.ok){panel.style.display='none';return;}
+    const data=JSON.parse(await res.text());
+    if(!data.previous){panel.innerHTML=`<div style="padding:.75rem 1rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);margin-bottom:1.5rem">⚠ Nessun dato per il periodo di confronto selezionato.</div>`;panel.style.display='block';return;}
+    renderComparePanel(data);document.querySelectorAll('.kpi-delta').forEach(e=>e.remove());renderKpiWithDeltas(data);panel.style.display='block';
+  }catch(e){panel.style.display='none';}
 }
 
-function renderComparePanel(data) {
-  const panel = document.getElementById('compare-panel');
-  const cur = data.current, prev = data.previous;
-  const tipo_label = data.tipo_confronto === 'stesso_periodo_anno_prima' ? 'Stesso periodo anno precedente' : 'Periodo precedente';
-  panel.innerHTML = `
-    <div class="compare-panel" style="margin-bottom:1.5rem">
-      <div class="panel-header"><span class="panel-title">Confronto: ${cur.periodo} vs ${prev.periodo} — ${tipo_label}</span></div>
-      <div class="compare-grid">
-        <div class="compare-col">
-          <div class="compare-col-header">📅 ${prev.periodo} — Periodo di confronto</div>
-          ${compareRows(prev, null)}
-        </div>
-        <div class="compare-col">
-          <div class="compare-col-header">📅 ${cur.periodo} — Periodo corrente</div>
-          ${compareRows(cur, data.deltas)}
-        </div>
-      </div>
-    </div>`;
+function renderComparePanel(data){
+  const panel=document.getElementById('compare-panel');
+  const cur=data.current,prev=data.previous;
+  panel.innerHTML=`<div class="compare-panel" style="margin-bottom:1.5rem"><div class="panel-header"><span class="panel-title">Confronto storico: ${cur.periodo} vs ${prev.periodo}</span></div><div class="compare-grid"><div class="compare-col"><div class="compare-col-header">📅 ${prev.periodo}</div>${compareRows(prev,null)}</div><div class="compare-col"><div class="compare-col-header">📅 ${cur.periodo}</div>${compareRows(cur,data.deltas)}</div></div></div>`;
 }
 
-function compareRows(r, deltas) {
-  const fields = [
-    {key:'ricavi',label:'Ricavi'},
-    {key:'costi',label:'Costi'},
-    {key:'margine',label:'Margine operativo'},
-    {key:'margine_percentuale',label:'Margine %'},
-  ];
-  return fields.map(f => {
-    const val = f.key === 'margine_percentuale' ? fmtPct(r[f.key]) : fmt(r[f.key]);
-    let deltaHtml = '';
-    if (deltas) {
-      const d = deltas.find(x => x.campo === f.key);
-      if (d) {
-        const sign = d.delta_assoluto >= 0 ? '▲' : '▼';
-        const cls  = f.key === 'costi'
-          ? (d.delta_assoluto > 0 ? 'delta-down' : 'delta-up')
-          : (d.delta_assoluto >= 0 ? 'delta-up' : 'delta-down');
-        const pct = f.key === 'margine_percentuale'
-          ? `${d.delta_assoluto > 0 ? '+' : ''}${d.delta_assoluto.toFixed(1)}pp`
-          : `${d.delta_percentuale > 0 ? '+' : ''}${d.delta_percentuale.toFixed(1)}%`;
-        deltaHtml = `<span class="${cls}" style="font-family:var(--mono);font-size:.7rem;margin-left:.5rem">${sign} ${pct}</span>`;
-      }
-    }
-    return `<div class="compare-row"><span class="compare-label">${f.label}</span><span class="compare-val">${val}${deltaHtml}</span></div>`;
+function compareRows(r,deltas){
+  return[{key:'ricavi',label:'Ricavi'},{key:'costi',label:'Costi'},{key:'margine',label:'Margine'},{key:'margine_percentuale',label:'Margine %'}].map(f=>{
+    const val=f.key==='margine_percentuale'?fmtPct(r[f.key]):fmt(r[f.key]);
+    let d='';if(deltas){const x=deltas.find(d=>d.campo===f.key);if(x){const sign=x.delta_assoluto>=0?'▲':'▼';const cls=f.key==='costi'?(x.delta_assoluto>0?'delta-down':'delta-up'):(x.delta_assoluto>=0?'delta-up':'delta-down');const pct=f.key==='margine_percentuale'?`${x.delta_assoluto>0?'+':''}${x.delta_assoluto.toFixed(1)}pp`:`${x.delta_percentuale>0?'+':''}${x.delta_percentuale.toFixed(1)}%`;d=`<span class="${cls}" style="font-family:var(--mono);font-size:.7rem;margin-left:.5rem">${sign} ${pct}</span>`;}}
+    return`<div class="compare-row"><span class="compare-label">${f.label}</span><span class="compare-val">${val}${d}</span></div>`;
   }).join('');
 }
 
-function renderKpiWithDeltas(data) {
-  document.querySelectorAll('.kpi-delta').forEach(el => el.remove());
-  if (!data || !data.deltas) return;
-  const map = {ricavi:'ricavi',costi:'costi',margine:'operativo','margine_percentuale':'%'};
-  data.deltas.forEach(d => {
-    const matchKey = map[d.campo] || '';
-    document.querySelectorAll('.kpi-card').forEach(card => {
-      const lbl = (card.querySelector('.kpi-label')?.textContent || '').toLowerCase();
-      if (!lbl.includes(matchKey)) return;
-      const sign = d.delta_assoluto >= 0 ? '▲' : '▼';
-      const cls  = d.campo === 'costi'
-        ? (d.delta_assoluto > 0 ? 'delta-down' : 'delta-up')
-        : (d.delta_assoluto >= 0 ? 'delta-up' : 'delta-down');
-      const pct = d.campo === 'margine_percentuale'
-        ? `${d.delta_assoluto > 0?'+':''}${d.delta_assoluto.toFixed(1)}pp`
-        : `${d.delta_percentuale > 0?'+':''}${d.delta_percentuale.toFixed(1)}% vs ${data.previous.periodo}`;
-      const el = document.createElement('div');
-      el.className = `kpi-delta ${cls}`;
-      el.textContent = `${sign} ${pct}`;
-      card.appendChild(el);
+function renderKpiWithDeltas(data){
+  document.querySelectorAll('.kpi-delta').forEach(e=>e.remove());
+  if(!data?.deltas)return;
+  const map={ricavi:'ricavi',costi:'costi',margine:'operativo',margine_percentuale:'%'};
+  data.deltas.forEach(d=>{
+    const mk=map[d.campo]||'';
+    document.querySelectorAll('.kpi-card').forEach(card=>{
+      const lbl=(card.querySelector('.kpi-label')?.textContent||'').toLowerCase();
+      if(!lbl.includes(mk))return;
+      const sign=d.delta_assoluto>=0?'▲':'▼';
+      const cls=d.campo==='costi'?(d.delta_assoluto>0?'delta-down':'delta-up'):(d.delta_assoluto>=0?'delta-up':'delta-down');
+      const pct=d.campo==='margine_percentuale'?`${d.delta_assoluto>0?'+':''}${d.delta_assoluto.toFixed(1)}pp`:`${d.delta_percentuale>0?'+':''}${d.delta_percentuale.toFixed(1)}% vs ${data.previous.periodo}`;
+      const el=document.createElement('div');el.className=`kpi-delta ${cls}`;el.textContent=`${sign} ${pct}`;card.appendChild(el);
     });
   });
 }
 
-function renderTrendChart(trend, currentPeriodo) {
-  const sec = document.getElementById('trend-section');
-  if (!sec || trend.length < 2) return;
-  sec.style.display = 'block';
-  const maxVal = Math.max(...trend.map(t => t.ricavi)) * 1.1 || 1;
-  const bars = trend.map(t => {
-    const rH = Math.max(Math.round((t.ricavi / maxVal)*100), 2);
-    const cH = Math.max(Math.round((t.costi  / maxVal)*100), 2);
-    const mH = Math.max(Math.round((Math.max(t.margine,0) / maxVal)*100), 2);
-    const cur = t.periodo === currentPeriodo;
-    return `<div class="trend-bar-group">
-      <div class="trend-bars-inner">
-        <div class="trend-bar" style="height:${rH}%;background:var(--navy-mid);opacity:${cur?1:.6}" title="${t.periodo} Ricavi: ${fmt(t.ricavi)}"></div>
-        <div class="trend-bar" style="height:${cH}%;background:var(--accent);opacity:${cur?1:.6}"  title="${t.periodo} Costi: ${fmt(t.costi)}"></div>
-        <div class="trend-bar" style="height:${mH}%;background:var(--gold);opacity:${cur?1:.6}"    title="${t.periodo} Margine: ${fmt(t.margine)}"></div>
-      </div>
-      <div class="trend-periodo" style="font-weight:${cur?700:400};color:${cur?'var(--navy)':'var(--muted)'}">
-        ${t.periodo.replace('-Q',' Q')}
-      </div>
-    </div>`;
+function renderTrendChart(trend,currentPeriodo){
+  const sec=document.getElementById('trend-section');
+  if(!sec||trend.length<2)return;
+  sec.style.display='block';
+  const maxVal=Math.max(...trend.map(t=>t.ricavi))*1.1||1;
+  const bars=trend.map(t=>{
+    const rH=Math.max(Math.round((t.ricavi/maxVal)*100),2),cH=Math.max(Math.round((t.costi/maxVal)*100),2),mH=Math.max(Math.round((Math.max(t.margine,0)/maxVal)*100),2);
+    const cur=t.periodo===currentPeriodo;
+    return`<div class="trend-bar-group"><div class="trend-bars-inner"><div class="trend-bar" style="height:${rH}%;background:var(--navy-mid);opacity:${cur?1:.6}" title="${t.periodo} Ricavi: ${fmt(t.ricavi)}"></div><div class="trend-bar" style="height:${cH}%;background:var(--accent);opacity:${cur?1:.6}" title="${t.periodo} Costi: ${fmt(t.costi)}"></div><div class="trend-bar" style="height:${mH}%;background:var(--gold);opacity:${cur?1:.6}" title="${t.periodo} Margine: ${fmt(t.margine)}"></div></div><div class="trend-periodo" style="font-weight:${cur?700:400};color:${cur?'var(--navy)':'var(--muted)'}">${t.periodo.replace('-Q',' Q')}</div></div>`;
   }).join('');
-  sec.innerHTML = `
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">Andamento nel tempo — ${trend.length} periodi</span></div>
-      <div class="trend-chart">
-        <div class="trend-bars">${bars}</div>
-        <div class="trend-legend">
-          <div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--navy-mid)"></div>Ricavi</div>
-          <div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--accent)"></div>Costi</div>
-          <div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--gold)"></div>Margine</div>
-        </div>
-        <div style="display:flex;gap:1rem;margin-top:.75rem;flex-wrap:wrap">
-          ${trend.map(t=>`<div style="font-family:var(--mono);font-size:.65rem;color:var(--muted)"><strong style="color:var(--navy)">${t.periodo.replace('-Q',' Q')}</strong> · ${t.margine_percentuale.toFixed(1)}%</div>`).join('')}
-        </div>
-      </div>
-    </div>`;
+  sec.innerHTML=`<div class="panel"><div class="panel-header"><span class="panel-title">Andamento nel tempo — ${trend.length} periodi</span></div><div class="trend-chart"><div class="trend-bars">${bars}</div><div class="trend-legend"><div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--navy-mid)"></div>Ricavi</div><div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--accent)"></div>Costi</div><div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--gold)"></div>Margine</div></div><div style="display:flex;gap:1rem;margin-top:.75rem;flex-wrap:wrap">${trend.map(t=>`<div style="font-family:var(--mono);font-size:.65rem;color:var(--muted)"><strong style="color:var(--navy)">${t.periodo.replace('-Q',' Q')}</strong> · ${t.margine_percentuale.toFixed(1)}%</div>`).join('')}</div></div></div>`;
 }
 
 // ── Toast ──
-function showToast(msg, type='') {
-  const el = document.createElement('div');
-  el.className = `toast ${type}`; el.textContent = msg;
-  document.getElementById('toast-container').appendChild(el);
-  setTimeout(() => el.remove(), 3800);
+function showToast(msg,type=''){
+  const el=document.createElement('div');el.className=`toast ${type}`;el.textContent=msg;
+  document.getElementById('toast-container').appendChild(el);setTimeout(()=>el.remove(),3800);
 }
 </script>
 </body>
