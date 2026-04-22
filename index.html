@@ -997,20 +997,43 @@ function renderCompareReport(data) {
 
 // ── Shared render helpers ──
 function renderCharts(r, top5, maxCost) {
-  return `<div class="content-grid">
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">Top 5 voci di costo</span></div>
-      <div class="panel-body"><div class="bar-chart">${top5.map(c=>{const v=c.pagamenti+Math.abs(c.rettifiche);const pct=(v/maxCost*100).toFixed(1);const lbl=c.descrizione.replace(/^\d+ - /,'').substring(0,42);return`<div class="bar-row"><span class="bar-label" title="${c.descrizione}">${lbl}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--navy);opacity:.8"></div></div><span class="bar-amount">${fmt(v)}</span></div>`;}).join('')}</div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">Composizione risultato</span></div>
-      <div class="panel-body"><div class="donut-wrap">${donutSVG(r.ricavi,r.costi,r.margine)}<div class="donut-legend">
-        <div class="legend-item"><span class="legend-dot" style="background:var(--navy-mid)"></span><div><div style="font-weight:600">Ricavi</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">${fmt(r.ricavi)}</div></div></div>
-        <div class="legend-item"><span class="legend-dot" style="background:#8b2a0f"></span><div><div style="font-weight:600">Costi</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">${fmt(r.costi)}</div></div></div>
-        <div class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span><div><div style="font-weight:600">Margine</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">${fmt(r.margine)}</div></div></div>
-      </div></div></div>
-    </div>
-  </div>`;
+  const barRows = top5.map(c => {
+    const v   = (c.pagamenti || 0) + Math.abs(c.rettifiche || 0);
+    const pct = maxCost > 0 ? Math.max((v / maxCost) * 100, 0).toFixed(1) : '0';
+    const lbl = (c.descrizione || '').replace(/^\d+ - /, '').substring(0, 42);
+    return '<div class="bar-row">' +
+      '<span class="bar-label" title="' + (c.descrizione||'') + '">' + lbl + '</span>' +
+      '<div style="flex:1;background:#ede9e0;border-radius:2px;height:14px;overflow:hidden;margin:0 .5rem">' +
+        '<div style="width:' + pct + '%;height:14px;background:#1a2744;border-radius:2px"></div>' +
+      '</div>' +
+      '<span style="font-family:monospace;font-size:.72rem;color:#7a7668;width:95px;text-align:right;flex-shrink:0">' + fmt(v) + '</span>' +
+    '</div>';
+  }).join('');
+
+  const legendItems = [
+    ['#243460','Ricavi',fmt(r.ricavi)],
+    ['#8b2a0f','Costi',fmt(r.costi)],
+    ['#b8943f','Margine',fmt(r.margine)]
+  ].map(([col,lbl,val]) =>
+    '<div class="legend-item">' +
+    '<span style="width:10px;height:10px;border-radius:50%;background:' + col + ';flex-shrink:0;display:inline-block"></span>' +
+    '<div><div style="font-weight:600">' + lbl + '</div>' +
+    '<div style="font-family:monospace;font-size:.7rem;color:#7a7668">' + val + '</div></div>' +
+    '</div>'
+  ).join('');
+
+  return '<div class="content-grid">' +
+    '<div class="panel">' +
+      '<div class="panel-header"><span class="panel-title">Top 5 voci di costo</span></div>' +
+      '<div class="panel-body"><div class="bar-chart">' + barRows + '</div></div>' +
+    '</div>' +
+    '<div class="panel">' +
+      '<div class="panel-header"><span class="panel-title">Composizione risultato</span></div>' +
+      '<div class="panel-body"><div class="donut-wrap">' + donutSVG(r.ricavi,r.costi,r.margine) +
+      '<div class="donut-legend">' + legendItems + '</div>' +
+      '</div></div>' +
+    '</div>' +
+  '</div>';
 }
 
 function renderAccountsTable(r) {
@@ -1073,12 +1096,27 @@ function renderBenchmark(r,benchmarks){
 }
 
 function buildBenchBars(r,bench){
+  const cl = _getCostoLavoro(r);
+  const clPct = r.ricavi > 0 ? cl/r.ricavi*100 : 0;
   const items=[
-    {label:'Margine %',client:r.margine_percentuale,ref:bench.margine_pct_medio,max:Math.max(r.margine_percentuale,bench.margine_pct_max||80)*1.1,suffix:'%'},
-    {label:'Costo lavoro',client:_getCostoLavoro(r)/r.ricavi*100||0,ref:bench.costo_lavoro_su_ricavi,max:Math.max((_getCostoLavoro(r)/r.ricavi*100)||0,bench.costo_lavoro_max||30)*1.3+5,suffix:'%'},
+    {label:'Margine %', client:r.margine_percentuale, ref:bench.margine_pct_medio||0, max:Math.max(r.margine_percentuale, bench.margine_pct_max||80)*1.15, suffix:'%'},
+    {label:'Costo lavoro', client:clPct, ref:bench.costo_lavoro_su_ricavi||0, max:Math.max(clPct, bench.costo_lavoro_max||30)*1.3+5, suffix:'%'},
   ];
-  return items.map(it=>{const cP=Math.min((it.client/it.max)*100,100).toFixed(1);const rP=Math.min((it.ref/it.max)*100,100).toFixed(1);
-    return`<div class="bench-bar-row"><span class="bench-bar-label">${it.label}</span><div class="bench-bar-wrap"><div class="bench-bar-client" style="width:${cP}%"></div><div class="bench-bar-tick" style="left:${rP}%"></div></div><span class="bench-bar-amounts">${it.client.toFixed(1)}${it.suffix} <span style="color:var(--gold)">| ${it.ref}${it.suffix}</span></span></div>`;
+  return items.map(it => {
+    const max = it.max || 1;
+    const cP = Math.min((it.client/max)*100, 100).toFixed(1);
+    const rP = Math.min((it.ref/max)*100, 100).toFixed(1);
+    return '<div class="bench-bar-row">' +
+      '<span class="bench-bar-label">' + it.label + '</span>' +
+      '<div style="flex:1;position:relative;height:20px;background:#ede9e0;border-radius:2px;overflow:hidden">' +
+        '<div style="position:absolute;top:0;left:0;height:100%;width:' + cP + '%;background:#1a2744;opacity:.75;border-radius:2px"></div>' +
+        '<div style="position:absolute;top:0;left:' + rP + '%;width:2px;height:100%;background:#b8943f"></div>' +
+      '</div>' +
+      '<span style="font-family:monospace;font-size:.68rem;color:#7a7668;width:120px;text-align:right;flex-shrink:0">' +
+        it.client.toFixed(1) + it.suffix +
+        ' <span style="color:#b8943f">| ' + it.ref + it.suffix + '</span>' +
+      '</span>' +
+    '</div>';
   }).join('');
 }
 function _getCostoLavoro(r){return(r.accounts||[]).filter(a=>/retribuz|personale|dipendente|inps/i.test(a.descrizione)).reduce((s,a)=>s+a.pagamenti,0);}
@@ -1148,9 +1186,19 @@ function renderTrendChart(trend,currentPeriodo){
   sec.style.display='block';
   const maxVal=Math.max(...trend.map(t=>t.ricavi))*1.1||1;
   const bars=trend.map(t=>{
-    const rH=Math.max(Math.round((t.ricavi/maxVal)*100),2),cH=Math.max(Math.round((t.costi/maxVal)*100),2),mH=Math.max(Math.round((Math.max(t.margine,0)/maxVal)*100),2);
+    const rH=Math.max(Math.round((t.ricavi/maxVal)*100),2);
+    const cH=Math.max(Math.round((t.costi/maxVal)*100),2);
+    const mH=Math.max(Math.round((Math.max(t.margine,0)/maxVal)*100),2);
     const cur=t.periodo===currentPeriodo;
-    return`<div class="trend-bar-group"><div class="trend-bars-inner"><div class="trend-bar" style="height:${rH}%;background:var(--navy-mid);opacity:${cur?1:.6}" title="${t.periodo} Ricavi: ${fmt(t.ricavi)}"></div><div class="trend-bar" style="height:${cH}%;background:var(--accent);opacity:${cur?1:.6}" title="${t.periodo} Costi: ${fmt(t.costi)}"></div><div class="trend-bar" style="height:${mH}%;background:var(--gold);opacity:${cur?1:.6}" title="${t.periodo} Margine: ${fmt(t.margine)}"></div></div><div class="trend-periodo" style="font-weight:${cur?700:400};color:${cur?'var(--navy)':'var(--muted)'}">${t.periodo.replace('-Q',' Q')}</div></div>`;
+    const op=cur?'1':'.55';
+    return '<div class="trend-bar-group">' +
+      '<div class="trend-bars-inner">' +
+        '<div class="trend-bar" style="height:'+rH+'%;background:#243460;opacity:'+op+'"></div>' +
+        '<div class="trend-bar" style="height:'+cH+'%;background:#8b2a0f;opacity:'+op+'"></div>' +
+        '<div class="trend-bar" style="height:'+mH+'%;background:#b8943f;opacity:'+op+'"></div>' +
+      '</div>' +
+      '<div class="trend-periodo" style="font-weight:'+(cur?700:400)+';color:'+(cur?'#1a2744':'#7a7668')+'">'+t.periodo.replace('-Q',' Q')+'</div>' +
+    '</div>';
   }).join('');
   sec.innerHTML=`<div class="panel"><div class="panel-header"><span class="panel-title">Andamento nel tempo — ${trend.length} periodi</span></div><div class="trend-chart"><div class="trend-bars">${bars}</div><div class="trend-legend"><div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--navy-mid)"></div>Ricavi</div><div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--accent)"></div>Costi</div><div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--gold)"></div>Margine</div></div><div style="display:flex;gap:1rem;margin-top:.75rem;flex-wrap:wrap">${trend.map(t=>`<div style="font-family:var(--mono);font-size:.65rem;color:var(--muted)"><strong style="color:var(--navy)">${t.periodo.replace('-Q',' Q')}</strong> · ${t.margine_percentuale.toFixed(1)}%</div>`).join('')}</div></div></div>`;
 }
