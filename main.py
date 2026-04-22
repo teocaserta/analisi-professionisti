@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Query
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import func
@@ -22,6 +24,14 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 @app.on_event("startup")
 def startup():
     init_db()
+
+@app.get("/", include_in_schema=False)
+def serve_frontend():
+    """Serve the frontend HTML directly from Railway."""
+    html_path = Path(__file__).parent / "index.html"
+    if not html_path.exists():
+        return {"error": "index.html non trovato nella cartella del backend"}
+    return FileResponse(html_path)
 
 # ─────────────────────────────────────────────────────────────
 # Pydantic models
