@@ -1,7 +1,7 @@
 """
 database.py — SQLite database setup with SQLAlchemy.
 """
-from sqlalchemy import Column, Integer, String, Float, Text, DateTime, ForeignKey, create_engine
+from sqlalchemy import Column, Integer, String, Float, Text, DateTime, ForeignKey, create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime, timezone
 
@@ -51,6 +51,26 @@ class AccountEntry(Base):
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+    _migrate()
+
+def _migrate():
+    """Aggiunge colonne mancanti senza distruggere i dati esistenti."""
+    with engine.connect() as conn:
+        # Legge le colonne esistenti nella tabella clients
+        result = conn.execute(text("PRAGMA table_info(clients)"))
+        client_cols = {row[1] for row in result}
+
+        if "settore" not in client_cols:
+            conn.execute(text("ALTER TABLE clients ADD COLUMN settore VARCHAR"))
+            conn.commit()
+
+        # Legge le colonne esistenti nella tabella financial_reports
+        result = conn.execute(text("PRAGMA table_info(financial_reports)"))
+        report_cols = {row[1] for row in result}
+
+        if "settore" not in report_cols:
+            conn.execute(text("ALTER TABLE financial_reports ADD COLUMN settore VARCHAR"))
+            conn.commit()
 
 def get_db():
     db = SessionLocal()
