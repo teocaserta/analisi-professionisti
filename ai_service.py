@@ -143,9 +143,10 @@ def _openai_confronto(api_key, pa, da, ma, ra_ann, pb, db_, mb, rb_ann, settore,
     forf_b = rb_ann < FORFETTARIO_SOGLIA and bench.get("forfettario_compatibile", True)
     forf_nota = ""
     if forf_a or forf_b:
-        forf_nota = (f"FORFETTARIO: {"entrambi i periodi hanno" if forf_a and forf_b else "uno dei periodi ha"} "
-                     f"ricavi annualizzati sotto €85.000 (A: €{ra_ann:,.0f}, B: €{rb_ann:,.0f}). "
-                     "Valutare nella sezione ottimizzazione_fiscale.")
+        _sogg = "entrambi i periodi hanno" if forf_a and forf_b else "uno dei periodi ha"
+    forf_nota = (f"FORFETTARIO: {_sogg} "
+                 f"ricavi annualizzati sotto €85.000 (A: €{ra_ann:,.0f}, B: €{rb_ann:,.0f}). "
+                 "Valutare nella sezione ottimizzazione_fiscale.")
 
     payload = {
         "periodo_A": {"periodo": pa, "tipo": tipo_a,
