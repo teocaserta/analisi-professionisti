@@ -25,6 +25,7 @@ class FinancialReport(Base):
     client_id           = Column(String, ForeignKey("clients.client_id"), index=True)
     periodo             = Column(String, index=True)
     settore             = Column(String, nullable=True)
+    file_type           = Column(String, nullable=True, default="prospetto_reddito")
     ricavi              = Column(Float)
     costi               = Column(Float)
     margine             = Column(Float)
@@ -70,6 +71,10 @@ def _migrate():
 
         if "settore" not in report_cols:
             conn.execute(text("ALTER TABLE financial_reports ADD COLUMN settore VARCHAR"))
+            conn.commit()
+
+        if "file_type" not in report_cols:
+            conn.execute(text("ALTER TABLE financial_reports ADD COLUMN file_type VARCHAR"))
             conn.commit()
 
 def get_db():

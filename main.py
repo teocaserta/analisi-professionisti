@@ -52,6 +52,7 @@ class ReportOut(BaseModel):
     client_id: str
     periodo: str
     settore: Optional[str]
+    file_type: Optional[str]
     ricavi: float
     costi: float
     margine: float
@@ -65,6 +66,7 @@ class ReportSummary(BaseModel):
     client_id: str
     periodo: str
     settore: Optional[str]
+    file_type: Optional[str]
     ricavi: float
     costi: float
     margine: float
@@ -149,6 +151,7 @@ async def upload_file(
         client_id=client_id,
         periodo=periodo,
         settore=settore,
+        file_type=parsed.get("file_type", "prospetto_reddito"),
         ricavi=parsed["ricavi"],
         costi=parsed["costi"],
         margine=parsed["margine"],

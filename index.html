@@ -760,6 +760,9 @@ function renderReport(clientId) {
     <div class="report-header">
       <h2>Cliente ${r.client_id}</h2>
       <span class="periodo-badge">${r.periodo}</span>
+      <span class="periodo-badge" style="background:${r.file_type==='conto_economico'?'#1a5c3a':'var(--navy)'}">
+        ${r.file_type === 'conto_economico' ? 'Conto Economico' : 'Prospetto Reddito'}
+      </span>
       <button class="pdf-btn" onclick="exportPDF('${r.client_id}')">⬇ Esporta PDF</button>
     </div>
 
