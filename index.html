@@ -555,6 +555,24 @@ td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
     </div>
 
     <div>
+      <div class="sidebar-section-label">Periodo di riferimento</div>
+      <div style="display:flex;gap:.5rem;margin-bottom:.5rem">
+        <input id="periodo-anno" type="number" value="2025" min="2020" max="2035"
+          style="width:80px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);border:1px solid rgba(184,148,63,.3);border-radius:3px;padding:.5rem .6rem;font-family:var(--mono);font-size:.75rem;outline:none;" />
+        <select id="periodo-tipo" style="flex:1;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);border:1px solid rgba(184,148,63,.3);border-radius:3px;padding:.5rem .6rem;font-family:var(--mono);font-size:.75rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;">
+          <option value="">Annuale</option>
+          <option value="-Q1">I Trimestre</option>
+          <option value="-Q2">II Trimestre</option>
+          <option value="-Q3">III Trimestre</option>
+          <option value="-Q4">IV Trimestre</option>
+        </select>
+      </div>
+      <div style="font-size:.68rem;color:rgba(255,255,255,.3);font-family:var(--mono)">
+        Periodo caricato: <span id="periodo-preview" style="color:var(--gold-light)">2025</span>
+      </div>
+    </div>
+
+    <div>
       <div class="sidebar-section-label">Clienti caricati</div>
       <div id="client-list">
         <div class="empty-state">Nessun cliente caricato</div>
@@ -584,7 +602,7 @@ td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
 <div id="toast-container"></div>
 
 <script>
-const API = ''; // URL relativo: frontend e backend sullo stesso dominio Railway
+const API = '';
 
 // Load settori from backend on startup
 async function loadSettori() {
@@ -610,8 +628,25 @@ async function loadSettori() {
 }
 loadSettori();
 
+// Update periodo preview
+function updatePeriodoPreview() {
+  const anno = document.getElementById('periodo-anno')?.value || '2025';
+  const tipo = document.getElementById('periodo-tipo')?.value || '';
+  const labels = {'':' (Annuale)','-Q1':' Q1','-Q2':' Q2','-Q3':' Q3','-Q4':' Q4'};
+  const preview = document.getElementById('periodo-preview');
+  if (preview) preview.textContent = anno + (labels[tipo] || tipo);
+}
+document.addEventListener('change', e => {
+  if (e.target.id === 'periodo-anno' || e.target.id === 'periodo-tipo') updatePeriodoPreview();
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'periodo-anno') updatePeriodoPreview();
+});
+updatePeriodoPreview();
+
+
 const FORFETTARIO_SOGLIA = 85000;
-const state = { reports: {}, active: null };
+const state = { reports: {}, active: null, compareData: {}, trendData: {} };
 
 const fmt    = n => new Intl.NumberFormat('it-IT', {style:'currency', currency:'EUR', maximumFractionDigits:2}).format(n);
 const fmtPct = n => n.toFixed(2).replace('.', ',') + '%';
@@ -634,9 +669,12 @@ async function handleFile(file) {
   showLoading('Analisi in corso…');
   showToast('Caricamento e analisi in corso…');
   const settore = document.getElementById('settore-select').value || 'altro';
+  const anno = document.getElementById('periodo-anno').value || new Date().getFullYear();
+  const tipo = document.getElementById('periodo-tipo').value || '';
+  const periodo = `${anno}${tipo}`;
   const fd = new FormData(); fd.append('file', file);
   try {
-    const res = await fetch(`${API}/upload?settore=${encodeURIComponent(settore)}`, { method: 'POST', body: fd });
+    const res = await fetch(`${API}/upload?settore=${encodeURIComponent(settore)}&periodo_override=${encodeURIComponent(periodo)}`, { method: 'POST', body: fd });
     if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Errore server'); }
     const report = await res.json();
     state.reports[report.client_id] = report;
@@ -790,6 +828,9 @@ function renderReport(clientId) {
         <div class="kpi-sub">margine / ricavi</div>
       </div>
     </div>
+
+    <!-- Trend section -->
+    <div class="trend-section" id="trend-section" style="display:none"></div>
 
     ${aiHTML}
 
@@ -1012,6 +1053,150 @@ function donutSVG(ricavi, costi, margine) {
     <text x="${cx}" y="${cy+12}" text-anchor="middle" font-family="DM Mono,monospace"
       font-size="7" fill="#7a7670" letter-spacing="0.1em">MARGINE</text>
   </svg>`;
+}
+
+
+// ── Compare & Trend ──
+
+async function initCompareAndTrend(clientId, periodo) {
+  try {
+    const trendRes = await fetch(`${API}/clients/${clientId}/trend`);
+    if (!trendRes.ok) return;
+    const trend = await trendRes.json();
+    state.trendData[clientId] = trend;
+    const toggle = document.getElementById('compare-toggle-wrap');
+    if (toggle && trend.length > 1) toggle.style.display = 'flex';
+    if (trend.length >= 2) renderTrendChart(trend, periodo);
+  } catch(e) {}
+}
+
+async function toggleCompare(clientId, periodo) {
+  const checked = document.getElementById('compare-check')?.checked;
+  const panel = document.getElementById('compare-panel');
+  if (!panel) return;
+  if (!checked) { panel.style.display = 'none'; renderKpiWithDeltas(null); return; }
+  const tipo = document.getElementById('compare-type')?.value || 'periodo_precedente';
+  try {
+    const res = await fetch(`${API}/clients/${clientId}/compare?periodo=${encodeURIComponent(periodo)}&tipo=${tipo}`);
+    if (!res.ok) { panel.style.display = 'none'; return; }
+    const data = await res.json();
+    if (!data.previous) {
+      panel.innerHTML = `<div style="padding:1rem 1.25rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);margin-bottom:1.5rem">⚠ Nessun dato disponibile per il periodo di confronto selezionato.</div>`;
+      panel.style.display = 'block'; return;
+    }
+    renderComparePanel(data);
+    renderKpiWithDeltas(data);
+    panel.style.display = 'block';
+  } catch(e) { panel.style.display = 'none'; }
+}
+
+function renderComparePanel(data) {
+  const panel = document.getElementById('compare-panel');
+  const cur = data.current, prev = data.previous;
+  const tipo_label = data.tipo_confronto === 'stesso_periodo_anno_prima' ? 'Stesso periodo anno precedente' : 'Periodo precedente';
+  panel.innerHTML = `
+    <div class="compare-panel" style="margin-bottom:1.5rem">
+      <div class="panel-header"><span class="panel-title">Confronto: ${cur.periodo} vs ${prev.periodo} — ${tipo_label}</span></div>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="compare-col-header">📅 ${prev.periodo} — Periodo di confronto</div>
+          ${compareRows(prev, null)}
+        </div>
+        <div class="compare-col">
+          <div class="compare-col-header">📅 ${cur.periodo} — Periodo corrente</div>
+          ${compareRows(cur, data.deltas)}
+        </div>
+      </div>
+    </div>`;
+}
+
+function compareRows(r, deltas) {
+  const fields = [
+    {key:'ricavi',label:'Ricavi'},
+    {key:'costi',label:'Costi'},
+    {key:'margine',label:'Margine operativo'},
+    {key:'margine_percentuale',label:'Margine %'},
+  ];
+  return fields.map(f => {
+    const val = f.key === 'margine_percentuale' ? fmtPct(r[f.key]) : fmt(r[f.key]);
+    let deltaHtml = '';
+    if (deltas) {
+      const d = deltas.find(x => x.campo === f.key);
+      if (d) {
+        const sign = d.delta_assoluto >= 0 ? '▲' : '▼';
+        const cls  = f.key === 'costi'
+          ? (d.delta_assoluto > 0 ? 'delta-down' : 'delta-up')
+          : (d.delta_assoluto >= 0 ? 'delta-up' : 'delta-down');
+        const pct = f.key === 'margine_percentuale'
+          ? `${d.delta_assoluto > 0 ? '+' : ''}${d.delta_assoluto.toFixed(1)}pp`
+          : `${d.delta_percentuale > 0 ? '+' : ''}${d.delta_percentuale.toFixed(1)}%`;
+        deltaHtml = `<span class="${cls}" style="font-family:var(--mono);font-size:.7rem;margin-left:.5rem">${sign} ${pct}</span>`;
+      }
+    }
+    return `<div class="compare-row"><span class="compare-label">${f.label}</span><span class="compare-val">${val}${deltaHtml}</span></div>`;
+  }).join('');
+}
+
+function renderKpiWithDeltas(data) {
+  document.querySelectorAll('.kpi-delta').forEach(el => el.remove());
+  if (!data || !data.deltas) return;
+  const map = {ricavi:'ricavi',costi:'costi',margine:'operativo','margine_percentuale':'%'};
+  data.deltas.forEach(d => {
+    const matchKey = map[d.campo] || '';
+    document.querySelectorAll('.kpi-card').forEach(card => {
+      const lbl = (card.querySelector('.kpi-label')?.textContent || '').toLowerCase();
+      if (!lbl.includes(matchKey)) return;
+      const sign = d.delta_assoluto >= 0 ? '▲' : '▼';
+      const cls  = d.campo === 'costi'
+        ? (d.delta_assoluto > 0 ? 'delta-down' : 'delta-up')
+        : (d.delta_assoluto >= 0 ? 'delta-up' : 'delta-down');
+      const pct = d.campo === 'margine_percentuale'
+        ? `${d.delta_assoluto > 0?'+':''}${d.delta_assoluto.toFixed(1)}pp`
+        : `${d.delta_percentuale > 0?'+':''}${d.delta_percentuale.toFixed(1)}% vs ${data.previous.periodo}`;
+      const el = document.createElement('div');
+      el.className = `kpi-delta ${cls}`;
+      el.textContent = `${sign} ${pct}`;
+      card.appendChild(el);
+    });
+  });
+}
+
+function renderTrendChart(trend, currentPeriodo) {
+  const sec = document.getElementById('trend-section');
+  if (!sec || trend.length < 2) return;
+  sec.style.display = 'block';
+  const maxVal = Math.max(...trend.map(t => t.ricavi)) * 1.1 || 1;
+  const bars = trend.map(t => {
+    const rH = Math.max(Math.round((t.ricavi / maxVal)*100), 2);
+    const cH = Math.max(Math.round((t.costi  / maxVal)*100), 2);
+    const mH = Math.max(Math.round((Math.max(t.margine,0) / maxVal)*100), 2);
+    const cur = t.periodo === currentPeriodo;
+    return `<div class="trend-bar-group">
+      <div class="trend-bars-inner">
+        <div class="trend-bar" style="height:${rH}%;background:var(--navy-mid);opacity:${cur?1:.6}" title="${t.periodo} Ricavi: ${fmt(t.ricavi)}"></div>
+        <div class="trend-bar" style="height:${cH}%;background:var(--accent);opacity:${cur?1:.6}"  title="${t.periodo} Costi: ${fmt(t.costi)}"></div>
+        <div class="trend-bar" style="height:${mH}%;background:var(--gold);opacity:${cur?1:.6}"    title="${t.periodo} Margine: ${fmt(t.margine)}"></div>
+      </div>
+      <div class="trend-periodo" style="font-weight:${cur?700:400};color:${cur?'var(--navy)':'var(--muted)'}">
+        ${t.periodo.replace('-Q',' Q')}
+      </div>
+    </div>`;
+  }).join('');
+  sec.innerHTML = `
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Andamento nel tempo — ${trend.length} periodi</span></div>
+      <div class="trend-chart">
+        <div class="trend-bars">${bars}</div>
+        <div class="trend-legend">
+          <div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--navy-mid)"></div>Ricavi</div>
+          <div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--accent)"></div>Costi</div>
+          <div class="trend-legend-item"><div class="trend-legend-dot" style="background:var(--gold)"></div>Margine</div>
+        </div>
+        <div style="display:flex;gap:1rem;margin-top:.75rem;flex-wrap:wrap">
+          ${trend.map(t=>`<div style="font-family:var(--mono);font-size:.65rem;color:var(--muted)"><strong style="color:var(--navy)">${t.periodo.replace('-Q',' Q')}</strong> · ${t.margine_percentuale.toFixed(1)}%</div>`).join('')}
+        </div>
+      </div>
+    </div>`;
 }
 
 // ── Toast ──
