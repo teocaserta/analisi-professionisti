@@ -555,6 +555,9 @@ td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
         <div id="file-a-name" style="font-size:.72rem;color:rgba(255,255,255,.45)"><strong style="color:var(--gold-light)">Clicca</strong> o trascina</div>
       </div>
       <input type="file" id="file-a" accept=".xlsx,.xls,.xlsm" style="display:none" onchange="onFileSelected('a',this)"/>
+      <div id="clear-a-wrap" style="display:none;margin-top:.35rem">
+        <button onclick="clearFile('a')" style="width:100%;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:.3rem;font-family:var(--mono);font-size:.65rem;cursor:pointer;letter-spacing:.06em">✕ Rimuovi file A</button>
+      </div>
       <div style="display:flex;gap:.4rem">
         <input id="anno-a" type="number" value="2025" min="2020" max="2035"
           style="width:72px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);border:1px solid rgba(184,148,63,.3);border-radius:3px;padding:.45rem .5rem;font-family:var(--mono);font-size:.72rem;outline:none;"/>
@@ -577,6 +580,9 @@ td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
         <div id="file-b-name" style="font-size:.72rem;color:rgba(255,255,255,.3)">Per confronto<br><strong style="color:rgba(212,172,85,.5)">Clicca</strong> o trascina</div>
       </div>
       <input type="file" id="file-b" accept=".xlsx,.xls,.xlsm" style="display:none" onchange="onFileSelected('b',this)"/>
+      <div id="clear-b-wrap" style="display:none;margin-top:.35rem">
+        <button onclick="clearFile('b')" style="width:100%;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:.3rem;font-family:var(--mono);font-size:.65rem;cursor:pointer;letter-spacing:.06em">✕ Rimuovi file B</button>
+      </div>
       <div style="display:flex;gap:.4rem">
         <input id="anno-b" type="number" value="2025" min="2020" max="2035"
           style="width:72px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);border:1px solid rgba(184,148,63,.2);border-radius:3px;padding:.45rem .5rem;font-family:var(--mono);font-size:.72rem;outline:none;"/>
@@ -592,7 +598,7 @@ td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
 
     <!-- ANALIZZA -->
     <button id="btn-analizza" onclick="handleAnalizza()"
-      style="width:100%;background:var(--gold);color:var(--navy-deep);border:none;border-radius:3px;padding:.65rem;font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:opacity .2s">
+      style="width:100%;background:#e8c040;color:#111b33;border:none;border-radius:3px;padding:.65rem;font-family:var(--mono);font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;box-shadow:0 2px 8px rgba(232,192,64,.35);transition:all .2s">
       ▶ Analizza
     </button>
 
@@ -637,6 +643,23 @@ function onFileSelected(slot, input) {
   if (label) { label.innerHTML = `<strong style="color:var(--gold-light)">${file.name.substring(0,28)}</strong>`; }
   const dz = document.getElementById(`drop-zone-${slot}`);
   if (dz) dz.style.borderColor = 'var(--gold-light)';
+  const clearWrap = document.getElementById(`clear-${slot}-wrap`);
+  if (clearWrap) clearWrap.style.display = 'block';
+}
+
+function clearFile(slot) {
+  state.files[slot] = null;
+  const input = document.getElementById(`file-${slot}`);
+  if (input) input.value = '';
+  const label = document.getElementById(`file-${slot}-name`);
+  const defaultText = slot === 'a'
+    ? '<strong style="color:var(--gold-light)">Clicca</strong> o trascina'
+    : 'Per confronto<br><strong style="color:rgba(212,172,85,.5)">Clicca</strong> o trascina';
+  if (label) label.innerHTML = defaultText;
+  const dz = document.getElementById(`drop-zone-${slot}`);
+  if (dz) dz.style.borderColor = slot === 'a' ? 'rgba(184,148,63,.4)' : 'rgba(184,148,63,.2)';
+  const clearWrap = document.getElementById(`clear-${slot}-wrap`);
+  if (clearWrap) clearWrap.style.display = 'none';
 }
 
 // Drag & drop
@@ -853,6 +876,7 @@ function renderSingleReport(r) {
     </div>
     <div id="compare-panel"></div>
     <div class="trend-section" id="trend-section" style="display:none"></div>
+    <div class="benchmark-section" id="bench-section" style="display:none"><div class="panel"><div class="panel-header"><span class="panel-title">Benchmark di settore</span></div><div class="panel-body" id="bench-body"></div></div></div>
     ${aiHtml}
     ${renderCharts(r, top5, maxCost)}
     ${renderAccountsTable(r)}
