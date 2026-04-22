@@ -590,7 +590,9 @@ const API = ''; // URL relativo: frontend e backend sullo stesso dominio Railway
 async function loadSettori() {
   try {
     const res = await fetch(`${API}/settori`);
-    const list = await res.json();
+    if (!res.ok) throw new Error('server error');
+    const text = await res.text();
+    const list = JSON.parse(text);
     const sel = document.getElementById('settore-select');
     sel.innerHTML = list.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
   } catch(e) {
@@ -872,15 +874,13 @@ function renderReport(clientId) {
 // Fetch benchmarks.json and render benchmark panel after report is shown
 async function loadAndRenderBenchmark(r) {
   try {
-    const res = await fetch(`${API}/settori`);
-    // We need the full benchmark data — fetch from a dedicated endpoint
     const benchRes = await fetch(`${API}/benchmarks/raw`);
-    if (benchRes.ok) {
-      const benchmarks = await benchRes.json();
-      renderBenchmark(r, benchmarks);
-    }
+    if (!benchRes.ok) return;
+    const text = await benchRes.text();
+    const benchmarks = JSON.parse(text);
+    renderBenchmark(r, benchmarks);
   } catch(e) {
-    // Fallback: use hardcoded defaults silently
+    // Silently skip benchmark panel if unavailable
   }
 }
 

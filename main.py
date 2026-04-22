@@ -8,14 +8,13 @@ from typing import Optional
 
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Query
 from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from database import init_db, get_db, Client, FinancialReport, AccountEntry
-from parser import parse_excel
+from excel_parser import parse_excel
 from ai_service import generate_commento
 
 app = FastAPI(title="Analisi Professionisti", version="2.0.0")
